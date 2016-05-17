@@ -1,0 +1,78 @@
+/* 
+ * File:   rosso_hw2serial.h
+ * Author: Stef Mientki, Copyright (c) 2002..2006, all rights reserved.
+ * Adapted by: Vasile Guta Ciucur
+ * Created on December 12, 2014, 4:23 PM
+ */
+
+/*
+ * It requires from you a definition of desired baudrate before including this header. 
+ * By example:
+ * #define USART_BAUDRATE2 19200
+ * #include <rosso_hw2serial.h>
+ */
+
+#ifndef ROSSO_HW2SERIAL_H
+#define	ROSSO_HW2SERIAL_H
+
+#ifndef USART_BAUDRATE2
+#define USART_BAUDRATE2 19200
+#endif
+
+void USART_HW2_init(void) {
+    uint16_t usart_div = ((_XTAL_FREQ / USART_BAUDRATE2) / 4) - 1;
+    TXSTA2 = 0b00000000; // reset (8 databits, async)
+    RCSTA2 = 0b00000000; // reset (8 databits, async)
+    //
+    BAUDCON2bits.BRG16 = 1;
+    TXSTA2bits.BRGH = 1;
+    SPBRG2 = (uint8_t) usart_div;
+    SPBRGH2 = (uint8_t) (usart_div >> 8);
+    //
+    //_calculate_baudrate();  // transmit and receive speed
+    PIE3bits.RC2IE = 0; // disable receive interrupts
+    PIE3bits.TX2IE = 0; // disable transmit interrupts
+    //USART_RX2_TRIS = 1; // make receive pin input
+    //USART_TX2_TRIS = 0;
+    TXSTA2bits.TXEN = 1; // Enable transmitter
+    // (makes transmit pin output)
+    RCSTA2bits.SPEN = 1; // activate serial port
+    RCSTA2bits.CREN = 1; // continuous receive
+}
+
+void USART_HW2_disable(void) {
+    while (!TXSTA2bits.TRMT); // wait while transmission pending
+    RCSTA2bits.SPEN = 0; // disable serial port
+}
+
+#define USART_HW2_enable() RCSTA2bits.SPEN=1; // enable serial port
+
+void USART_HW2_write(uint8_t data) {
+    while (!PIR3bits.TX2IF); // wait while transmission pending
+    TXREG2 = data; // transfer data
+}
+
+void USART_HW2_putstr(uint8_t * s) {
+    uint8_t c;
+    while ((c = *s++))
+        USART_HW2_write(c);
+}
+
+
+bool_t USART_HW2_read(uint8_t *data) {
+    if (PIR3bits.RC2IF) { // check if data available
+        *data = RCREG2; // pass received byte to caller
+        PIR3bits.RC2IF = 0; // eur@fiwhex.nl 12-sept-08
+    } else return (FALSE); // no data available
+    if (RCSTA2bits.OERR) { // reset USART after overrun
+        RCSTA2bits.CREN = 0;
+        RCSTA2bits.CREN = 1;
+    }
+    return (TRUE);
+}
+
+#define USART_HW2_datardy()  (PIR3bits.RC2IF)
+#define USART_HW2_databusy() (!TXSTA2bits.TRMT)
+
+#endif	/* ROSSO_HWSERIAL_H */
+
