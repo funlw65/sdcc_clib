@@ -1,6 +1,6 @@
 ;--------------------------------------------------------
 ; File Created by SDCC : free open source ANSI-C Compiler
-; Version 3.5.6 #9596 (Linux)
+; Version 3.5.6 #9604 (Linux)
 ;--------------------------------------------------------
 ; PIC16 port for the Microchip 16-bit core micros
 ;--------------------------------------------------------
@@ -40,24 +40,12 @@
 	global	_lcd_clear_line
 	global	_lcd_progress
 	global	_lcd_init
-	global	_dectobcd
-	global	_bcdtodec
-	global	_nibble2hex
-	global	_byte2dec
-	global	_word2dec
-	global	_double2dec
-	global	_double2hex
-	global	_word2hex
-	global	_byte2hex
 	global	_sf
 
 ;--------------------------------------------------------
 ; extern variables in this module
 ;--------------------------------------------------------
 	extern	__gptrget1
-	extern	__divuchar
-	extern	__moduchar
-	extern	__gptrput1
 	extern	_ANSELAbits
 	extern	_ANSELBbits
 	extern	_ANSELCbits
@@ -458,10 +446,7 @@
 	extern	_delay100tcy
 	extern	_delay1ktcy
 	extern	_delay10ktcy
-	extern	__moduint
-	extern	__divuint
-	extern	__modulong
-	extern	__divulong
+	extern	_uitoa
 	extern	_cinit
 
 ;--------------------------------------------------------
@@ -470,10 +455,8 @@
 STATUS	equ	0xfd8
 WREG	equ	0xfe8
 FSR0L	equ	0xfe9
-FSR0H	equ	0xfea
 FSR1L	equ	0xfe1
 FSR2L	equ	0xfd9
-INDF0	equ	0xfef
 POSTINC1	equ	0xfe6
 POSTDEC1	equ	0xfe5
 PREINC1	equ	0xfe4
@@ -495,12 +478,6 @@ r0x01	res	1
 r0x02	res	1
 r0x03	res	1
 r0x04	res	1
-r0x05	res	1
-r0x06	res	1
-r0x07	res	1
-r0x08	res	1
-r0x09	res	1
-r0x0a	res	1
 
 udata_main_0	udata
 ___lcd_write_nibble_nibble_1_14	res	1
@@ -528,7 +505,7 @@ __entry:
 S_main__main	code
 _main:
 	BANKSEL	_ANSELA
-;	.line	49; main.c	AllDigital(); /* all pins digital */
+;	.line	32; main.c	AllDigital(); /* all pins digital */
 	CLRF	_ANSELA, B
 	BANKSEL	_ANSELB
 	CLRF	_ANSELB, B
@@ -544,49 +521,25 @@ _main:
 	CLRF	_CM1CON0
 	CLRF	_CM2CON0
 	CLRF	_CM2CON1
-;	.line	51; main.c	OnBoardLED_dir = 0; /* output */
+;	.line	34; main.c	OnBoardLED_dir = 0; /* output */
 	BCF	_TRISCbits, 2
-;	.line	52; main.c	OnBoardButton_dir = 1; /* input */
+;	.line	35; main.c	OnBoardButton_dir = 1; /* input */
 	BSF	_TRISAbits, 4
-;	.line	53; main.c	OnBoardLED = 0;
+;	.line	36; main.c	OnBoardLED = 0;
 	BCF	_LATCbits, 2
-;	.line	57; main.c	lcd_init(LCD_HD44780);
+;	.line	38; main.c	lcd_init(LCD_HD44780);
 	MOVLW	0x00
 	CLRF	POSTDEC1
 	CALL	_lcd_init
 	MOVF	POSTINC1, F
-;	.line	59; main.c	for (i = 0; i < 4; i++) {
-	CLRF	r0x00
-_00606_DS_:
-;	.line	60; main.c	OnBoardLED = 1;
-	BSF	_LATCbits, 2
-;	.line	61; main.c	delay_100ms();
-	MOVLW	0xa0
-	CALL	_delay10ktcy
-;	.line	62; main.c	delay_100ms();
-	MOVLW	0xa0
-	CALL	_delay10ktcy
-;	.line	63; main.c	OnBoardLED = 0;
-	BCF	_LATCbits, 2
-;	.line	64; main.c	delay_100ms();
-	MOVLW	0xa0
-	CALL	_delay10ktcy
-;	.line	65; main.c	delay_100ms();
-	MOVLW	0xa0
-	CALL	_delay10ktcy
-;	.line	59; main.c	for (i = 0; i < 4; i++) {
-	INCF	r0x00, F
-	MOVLW	0x04
-	SUBWF	r0x00, W
-	BNC	_00606_DS_
-;	.line	67; main.c	lcd_cursor_position(0, 0);
+;	.line	39; main.c	lcd_cursor_position(0, 0);
 	MOVLW	0x00
 	CLRF	POSTDEC1
 	CLRF	POSTDEC1
 	CALL	_lcd_cursor_position
 	MOVF	POSTINC1, F
 	MOVF	POSTINC1, F
-;	.line	68; main.c	lcd_write_str(sr);  /* reading the string from the RAM */
+;	.line	40; main.c	lcd_write_str(sr);  /* reading the string from the RAM */
 	MOVLW	0x80
 ; #	MOVWF	r0x02
 ; #	MOVF	r0x02, W
@@ -598,7 +551,7 @@ _00606_DS_:
 	CALL	_lcd_write_str
 	MOVLW	0x03
 	ADDWF	FSR1L, F
-;	.line	69; main.c	lcd_write_strF(sf); /* reading the string from the FLASH */
+;	.line	41; main.c	lcd_write_strF(sf); /* reading the string from the FLASH */
 	MOVLW	UPPER(_sf)
 	MOVWF	POSTDEC1
 	MOVLW	HIGH(_sf)
@@ -608,19 +561,66 @@ _00606_DS_:
 	CALL	_lcd_write_strF
 	MOVLW	0x03
 	ADDWF	FSR1L, F
-;	.line	70; main.c	while (1) {
+;	.line	42; main.c	while (1) {
 	CLRF	r0x00
-_00604_DS_:
-;	.line	72; main.c	counter += 1; /* count up to 255 and start again from zer0 */
+_00426_DS_:
+;	.line	43; main.c	counter += 1; /* count up to 255 and start again from zer0 */
 	INCF	r0x00, F
-;	.line	73; main.c	lcd_cursor_position(1, 0);
+;	.line	44; main.c	lcd_cursor_position(1, 0);
 	CLRF	POSTDEC1
 	MOVLW	0x01
 	MOVWF	POSTDEC1
 	CALL	_lcd_cursor_position
 	MOVF	POSTINC1, F
 	MOVF	POSTINC1, F
-;	.line	74; main.c	byte2dec(counter, s);
+;	.line	45; main.c	uitoa(counter, s, 10);
+	MOVFF	r0x00, r0x01
+	MOVLW	0x0a
+	MOVWF	POSTDEC1
+	MOVLW	HIGH(_s)
+	MOVWF	POSTDEC1
+	MOVLW	LOW(_s)
+	MOVWF	POSTDEC1
+	CLRF	POSTDEC1
+	MOVF	r0x01, W
+	MOVWF	POSTDEC1
+	CALL	_uitoa
+	MOVLW	0x05
+	ADDWF	FSR1L, F
+;	.line	46; main.c	if(counter < 10) {
+	MOVLW	0x0a
+	SUBWF	r0x00, W
+	BC	_00421_DS_
+;	.line	47; main.c	lcd_write_str("  ");
+	MOVLW	UPPER(___str_0)
+	MOVWF	POSTDEC1
+	MOVLW	HIGH(___str_0)
+	MOVWF	POSTDEC1
+	MOVLW	LOW(___str_0)
+	MOVWF	POSTDEC1
+	CALL	_lcd_write_str
+	MOVLW	0x03
+	ADDWF	FSR1L, F
+_00421_DS_:
+;	.line	49; main.c	if((counter > 9) && (counter < 100)) { 
+	MOVLW	0x0a
+	SUBWF	r0x00, W
+	BNC	_00423_DS_
+	MOVLW	0x64
+	SUBWF	r0x00, W
+	BC	_00423_DS_
+;	.line	50; main.c	lcd_write_str(" ");
+	MOVLW	UPPER(___str_1)
+	MOVWF	POSTDEC1
+	MOVLW	HIGH(___str_1)
+	MOVWF	POSTDEC1
+	MOVLW	LOW(___str_1)
+	MOVWF	POSTDEC1
+	CALL	_lcd_write_str
+	MOVLW	0x03
+	ADDWF	FSR1L, F
+_00423_DS_:
+;	.line	52; main.c	lcd_write_str(s);
 	MOVLW	0x80
 ; #	MOVWF	r0x03
 ; #	MOVF	r0x03, W
@@ -629,38 +629,16 @@ _00604_DS_:
 	MOVWF	POSTDEC1
 	MOVLW	LOW(_s)
 	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	_byte2dec
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-;	.line	75; main.c	for (i = 0; i < 3; i++) _lcd_write_data(s[i]);
-	CLRF	r0x01
-_00608_DS_:
-	MOVLW	LOW(_s)
-	ADDWF	r0x01, W
-	MOVWF	r0x02
-	CLRF	r0x03
-	MOVLW	HIGH(_s)
-	ADDWFC	r0x03, F
-	MOVFF	r0x02, FSR0L
-	MOVFF	r0x03, FSR0H
-	MOVFF	INDF0, r0x02
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	CALL	__lcd_write_data
-	MOVF	POSTINC1, F
-	INCF	r0x01, F
+	CALL	_lcd_write_str
 	MOVLW	0x03
-	SUBWF	r0x01, W
-	BNC	_00608_DS_
-;	.line	76; main.c	delay_150ms();
+	ADDWF	FSR1L, F
+;	.line	53; main.c	delay_150ms();
 	MOVLW	0xf0
 	CALL	_delay10ktcy
-;	.line	77; main.c	delay_150ms();
+;	.line	54; main.c	delay_150ms();
 	MOVLW	0xf0
 	CALL	_delay10ktcy
-	BRA	_00604_DS_
+	BRA	_00426_DS_
 	RETURN	
 
 ; ; Starting pCode block
@@ -774,5193 +752,57 @@ lockup:
 	bra	lockup
 	
 ; ; Starting pCode block
-S_main__byte2hex	code
-_byte2hex:
-;	.line	287; ../my_sdcc_lib/rosso_sdcc_conversion.h	void byte2hex(uint8_t val, uint8_t *s) {
-	MOVFF	FSR2L, POSTDEC1
-	MOVFF	FSR1L, FSR2L
-	MOVFF	r0x00, POSTDEC1
-	MOVFF	r0x01, POSTDEC1
-	MOVFF	r0x02, POSTDEC1
-	MOVFF	r0x03, POSTDEC1
-	MOVFF	r0x04, POSTDEC1
-	MOVFF	r0x05, POSTDEC1
-	MOVFF	r0x06, POSTDEC1
-	MOVLW	0x02
-	MOVFF	PLUSW2, r0x00
-	MOVLW	0x03
-	MOVFF	PLUSW2, r0x01
-	MOVLW	0x04
-	MOVFF	PLUSW2, r0x02
-	MOVLW	0x05
-	MOVFF	PLUSW2, r0x03
-;	.line	288; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = nibble2hex(val >> 4);
-	SWAPF	r0x00, W
-	ANDLW	0x0f
-; #	MOVWF	r0x04
-; #	MOVF	r0x04, W
-	MOVWF	POSTDEC1
-	CALL	_nibble2hex
-	MOVWF	r0x04
-	MOVF	POSTINC1, F
-	MOVFF	r0x04, POSTDEC1
-	MOVFF	r0x01, FSR0L
-	MOVFF	r0x02, PRODL
-	MOVF	r0x03, W
-	CALL	__gptrput1
-;	.line	289; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = nibble2hex(val);
-	MOVF	r0x01, W
-	ADDLW	0x01
-	MOVWF	r0x04
-	MOVLW	0x00
-	ADDWFC	r0x02, W
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	_nibble2hex
-	MOVWF	r0x00
-	MOVF	POSTINC1, F
-	MOVFF	r0x00, POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	MOVF	r0x06, W
-	CALL	__gptrput1
-;	.line	290; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = 0;
-	MOVLW	0x02
-	ADDWF	r0x01, F
-	MOVLW	0x00
-	ADDWFC	r0x02, F
-	ADDWFC	r0x03, F
-	CLRF	POSTDEC1
-	MOVFF	r0x01, FSR0L
-	MOVFF	r0x02, PRODL
-	MOVF	r0x03, W
-	CALL	__gptrput1
-	MOVFF	PREINC1, r0x06
-	MOVFF	PREINC1, r0x05
-	MOVFF	PREINC1, r0x04
-	MOVFF	PREINC1, r0x03
-	MOVFF	PREINC1, r0x02
-	MOVFF	PREINC1, r0x01
-	MOVFF	PREINC1, r0x00
-	MOVFF	PREINC1, FSR2L
-	RETURN	
-
-; ; Starting pCode block
-S_main__word2hex	code
-_word2hex:
-;	.line	279; ../my_sdcc_lib/rosso_sdcc_conversion.h	void word2hex(uint16_t val, uint8_t *s) {
-	MOVFF	FSR2L, POSTDEC1
-	MOVFF	FSR1L, FSR2L
-	MOVFF	r0x00, POSTDEC1
-	MOVFF	r0x01, POSTDEC1
-	MOVFF	r0x02, POSTDEC1
-	MOVFF	r0x03, POSTDEC1
-	MOVFF	r0x04, POSTDEC1
-	MOVFF	r0x05, POSTDEC1
-	MOVFF	r0x06, POSTDEC1
-	MOVFF	r0x07, POSTDEC1
-	MOVFF	r0x08, POSTDEC1
-	MOVLW	0x02
-	MOVFF	PLUSW2, r0x00
-	MOVLW	0x03
-	MOVFF	PLUSW2, r0x01
-	MOVLW	0x04
-	MOVFF	PLUSW2, r0x02
-	MOVLW	0x05
-	MOVFF	PLUSW2, r0x03
-	MOVLW	0x06
-	MOVFF	PLUSW2, r0x04
-;	.line	280; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = nibble2hex(val >> 12);
-	SWAPF	r0x01, W
-	ANDLW	0x0f
-	MOVWF	POSTDEC1
-	CALL	_nibble2hex
-	MOVWF	r0x05
-	MOVF	POSTINC1, F
-	MOVFF	r0x05, POSTDEC1
-	MOVFF	r0x02, FSR0L
-	MOVFF	r0x03, PRODL
-	MOVF	r0x04, W
-	CALL	__gptrput1
-;	.line	281; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = nibble2hex(val >> 8);
-	MOVF	r0x02, W
-	ADDLW	0x01
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x07
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	CALL	_nibble2hex
-	MOVWF	r0x08
-	MOVF	POSTINC1, F
-	MOVFF	r0x08, POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	MOVF	r0x07, W
-	CALL	__gptrput1
-;	.line	282; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = nibble2hex(val >> 4);
-	MOVF	r0x02, W
-	ADDLW	0x02
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x07
-	SWAPF	r0x00, W
-	ANDLW	0x0f
-	MOVWF	r0x08
-	SWAPF	r0x01, W
-	ANDLW	0xf0
-	ADDWF	r0x08, F
-	MOVF	r0x08, W
-	MOVWF	POSTDEC1
-	CALL	_nibble2hex
-	MOVWF	r0x08
-	MOVF	POSTINC1, F
-	MOVFF	r0x08, POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	MOVF	r0x07, W
-	CALL	__gptrput1
-;	.line	283; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[3] = nibble2hex(val);
-	MOVF	r0x02, W
-	ADDLW	0x03
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x07
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	_nibble2hex
-	MOVWF	r0x00
-	MOVF	POSTINC1, F
-	MOVFF	r0x00, POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	MOVF	r0x07, W
-	CALL	__gptrput1
-;	.line	284; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[4] = 0;
-	MOVLW	0x04
-	ADDWF	r0x02, F
-	MOVLW	0x00
-	ADDWFC	r0x03, F
-	ADDWFC	r0x04, F
-	CLRF	POSTDEC1
-	MOVFF	r0x02, FSR0L
-	MOVFF	r0x03, PRODL
-	MOVF	r0x04, W
-	CALL	__gptrput1
-	MOVFF	PREINC1, r0x08
-	MOVFF	PREINC1, r0x07
-	MOVFF	PREINC1, r0x06
-	MOVFF	PREINC1, r0x05
-	MOVFF	PREINC1, r0x04
-	MOVFF	PREINC1, r0x03
-	MOVFF	PREINC1, r0x02
-	MOVFF	PREINC1, r0x01
-	MOVFF	PREINC1, r0x00
-	MOVFF	PREINC1, FSR2L
-	RETURN	
-
-; ; Starting pCode block
-S_main__double2hex	code
-_double2hex:
-;	.line	267; ../my_sdcc_lib/rosso_sdcc_conversion.h	void double2hex(uint32_t val, uint8_t *s) {
-	MOVFF	FSR2L, POSTDEC1
-	MOVFF	FSR1L, FSR2L
-	MOVFF	r0x00, POSTDEC1
-	MOVFF	r0x01, POSTDEC1
-	MOVFF	r0x02, POSTDEC1
-	MOVFF	r0x03, POSTDEC1
-	MOVFF	r0x04, POSTDEC1
-	MOVFF	r0x05, POSTDEC1
-	MOVFF	r0x06, POSTDEC1
-	MOVFF	r0x07, POSTDEC1
-	MOVFF	r0x08, POSTDEC1
-	MOVFF	r0x09, POSTDEC1
-	MOVFF	r0x0a, POSTDEC1
-	MOVLW	0x02
-	MOVFF	PLUSW2, r0x00
-	MOVLW	0x03
-	MOVFF	PLUSW2, r0x01
-	MOVLW	0x04
-	MOVFF	PLUSW2, r0x02
-	MOVLW	0x05
-	MOVFF	PLUSW2, r0x03
-	MOVLW	0x06
-	MOVFF	PLUSW2, r0x04
-	MOVLW	0x07
-	MOVFF	PLUSW2, r0x05
-	MOVLW	0x08
-	MOVFF	PLUSW2, r0x06
-;	.line	268; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = nibble2hex(val >> 28);
-	SWAPF	r0x03, W
-	ANDLW	0x0f
-	MOVWF	POSTDEC1
-	CALL	_nibble2hex
-	MOVWF	r0x07
-	MOVF	POSTINC1, F
-	MOVFF	r0x07, POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	MOVF	r0x06, W
-	CALL	__gptrput1
-;	.line	269; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = nibble2hex(val >> 24);
-	MOVF	r0x04, W
-	ADDLW	0x01
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	CALL	_nibble2hex
-	MOVWF	r0x0a
-	MOVF	POSTINC1, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	270; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = nibble2hex(val >> 20);
-	MOVF	r0x04, W
-	ADDLW	0x02
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	SWAPF	r0x02, W
-	ANDLW	0x0f
-	MOVWF	r0x0a
-	SWAPF	r0x03, W
-	ANDLW	0xf0
-	ADDWF	r0x0a, F
-	MOVF	r0x0a, W
-	MOVWF	POSTDEC1
-	CALL	_nibble2hex
-	MOVWF	r0x0a
-	MOVF	POSTINC1, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	271; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[3] = nibble2hex(val >> 16);
-	MOVF	r0x04, W
-	ADDLW	0x03
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	CALL	_nibble2hex
-	MOVWF	r0x0a
-	MOVF	POSTINC1, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	272; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[4] = nibble2hex(val >> 12);
-	MOVF	r0x04, W
-	ADDLW	0x04
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	SWAPF	r0x01, W
-	ANDLW	0x0f
-	MOVWF	r0x0a
-	SWAPF	r0x02, W
-	ANDLW	0xf0
-	ADDWF	r0x0a, F
-	MOVF	r0x0a, W
-	MOVWF	POSTDEC1
-	CALL	_nibble2hex
-	MOVWF	r0x0a
-	MOVF	POSTINC1, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	273; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[5] = nibble2hex(val >> 8);
-	MOVF	r0x04, W
-	ADDLW	0x05
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	CALL	_nibble2hex
-	MOVWF	r0x0a
-	MOVF	POSTINC1, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	274; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[6] = nibble2hex(val >> 4);
-	MOVF	r0x04, W
-	ADDLW	0x06
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	SWAPF	r0x00, W
-	ANDLW	0x0f
-	MOVWF	r0x0a
-	SWAPF	r0x01, W
-	ANDLW	0xf0
-	ADDWF	r0x0a, F
-	MOVF	r0x0a, W
-	MOVWF	POSTDEC1
-	CALL	_nibble2hex
-	MOVWF	r0x0a
-	MOVF	POSTINC1, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	275; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[7] = nibble2hex(val);
-	MOVF	r0x04, W
-	ADDLW	0x07
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	_nibble2hex
-	MOVWF	r0x00
-	MOVF	POSTINC1, F
-	MOVFF	r0x00, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	276; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[8] = 0;
-	MOVLW	0x08
-	ADDWF	r0x04, F
-	MOVLW	0x00
-	ADDWFC	r0x05, F
-	ADDWFC	r0x06, F
-	CLRF	POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	MOVF	r0x06, W
-	CALL	__gptrput1
-	MOVFF	PREINC1, r0x0a
-	MOVFF	PREINC1, r0x09
-	MOVFF	PREINC1, r0x08
-	MOVFF	PREINC1, r0x07
-	MOVFF	PREINC1, r0x06
-	MOVFF	PREINC1, r0x05
-	MOVFF	PREINC1, r0x04
-	MOVFF	PREINC1, r0x03
-	MOVFF	PREINC1, r0x02
-	MOVFF	PREINC1, r0x01
-	MOVFF	PREINC1, r0x00
-	MOVFF	PREINC1, FSR2L
-	RETURN	
-
-; ; Starting pCode block
-S_main__double2dec	code
-_double2dec:
-;	.line	98; ../my_sdcc_lib/rosso_sdcc_conversion.h	void double2dec(uint32_t val, uint8_t *s) {
-	MOVFF	FSR2L, POSTDEC1
-	MOVFF	FSR1L, FSR2L
-	MOVFF	r0x00, POSTDEC1
-	MOVFF	r0x01, POSTDEC1
-	MOVFF	r0x02, POSTDEC1
-	MOVFF	r0x03, POSTDEC1
-	MOVFF	r0x04, POSTDEC1
-	MOVFF	r0x05, POSTDEC1
-	MOVFF	r0x06, POSTDEC1
-	MOVFF	r0x07, POSTDEC1
-	MOVFF	r0x08, POSTDEC1
-	MOVFF	r0x09, POSTDEC1
-	MOVFF	r0x0a, POSTDEC1
-	MOVLW	0x02
-	MOVFF	PLUSW2, r0x00
-	MOVLW	0x03
-	MOVFF	PLUSW2, r0x01
-	MOVLW	0x04
-	MOVFF	PLUSW2, r0x02
-	MOVLW	0x05
-	MOVFF	PLUSW2, r0x03
-	MOVLW	0x06
-	MOVFF	PLUSW2, r0x04
-	MOVLW	0x07
-	MOVFF	PLUSW2, r0x05
-	MOVLW	0x08
-	MOVFF	PLUSW2, r0x06
-;	.line	99; ../my_sdcc_lib/rosso_sdcc_conversion.h	if (val > 999999999) {
-	MOVLW	0x3b
-	SUBWF	r0x03, W
-	BNZ	_00563_DS_
-	MOVLW	0x9a
-	SUBWF	r0x02, W
-	BNZ	_00563_DS_
-	MOVLW	0xca
-	SUBWF	r0x01, W
-	BNZ	_00563_DS_
-	MOVLW	0x00
-	SUBWF	r0x00, W
-_00563_DS_:
-	BTFSS	STATUS, 0
-	GOTO	_00532_DS_
-;	.line	100; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[9] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x09
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	101; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	102; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[8] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x08
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	103; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	104; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[7] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x07
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	105; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	106; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[6] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x06
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	107; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	108; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[5] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x05
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	109; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	110; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[4] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x04
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	111; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	112; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[3] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x03
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	113; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	114; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x02
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	115; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	116; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x01
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	117; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	118; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = '0' + val;
-	MOVF	r0x00, W
-	MOVWF	r0x07
-	MOVLW	0x30
-	ADDWF	r0x07, F
-	MOVFF	r0x07, POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	MOVF	r0x06, W
-	CALL	__gptrput1
-;	.line	119; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[10] = 0;
-	MOVF	r0x04, W
-	ADDLW	0x0a
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	CLRF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	CALL	__gptrput1
-	GOTO	_00534_DS_
-_00532_DS_:
-;	.line	120; ../my_sdcc_lib/rosso_sdcc_conversion.h	} else if (val > 99999999) {
-	MOVLW	0x05
-	SUBWF	r0x03, W
-	BNZ	_00564_DS_
-	MOVLW	0xf5
-	SUBWF	r0x02, W
-	BNZ	_00564_DS_
-	MOVLW	0xe1
-	SUBWF	r0x01, W
-	BNZ	_00564_DS_
-	MOVLW	0x00
-	SUBWF	r0x00, W
-_00564_DS_:
-	BTFSS	STATUS, 0
-	GOTO	_00529_DS_
-;	.line	121; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[9] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x09
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	122; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	123; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[8] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x08
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	124; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	125; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[7] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x07
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	126; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	127; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[6] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x06
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	128; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	129; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[5] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x05
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	130; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	131; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[4] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x04
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	132; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	133; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[3] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x03
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	134; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	135; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x02
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	136; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	137; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = '0' + val;
-	MOVF	r0x04, W
-	ADDLW	0x01
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVF	r0x00, W
-	MOVWF	r0x0a
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	138; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = ' ';
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	MOVF	r0x06, W
-	CALL	__gptrput1
-;	.line	139; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[10] = 0;
-	MOVF	r0x04, W
-	ADDLW	0x0a
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	CLRF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	CALL	__gptrput1
-	GOTO	_00534_DS_
-_00529_DS_:
-;	.line	140; ../my_sdcc_lib/rosso_sdcc_conversion.h	} else if (val > 9999999) {
-	MOVLW	0x00
-	SUBWF	r0x03, W
-	BNZ	_00565_DS_
-	MOVLW	0x98
-	SUBWF	r0x02, W
-	BNZ	_00565_DS_
-	MOVLW	0x96
-	SUBWF	r0x01, W
-	BNZ	_00565_DS_
-	MOVLW	0x80
-	SUBWF	r0x00, W
-_00565_DS_:
-	BTFSS	STATUS, 0
-	BRA	_00526_DS_
-;	.line	141; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[9] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x09
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	142; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	143; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[8] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x08
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	144; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	145; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[7] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x07
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	146; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	147; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[6] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x06
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	148; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	149; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[5] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x05
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	150; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	151; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[4] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x04
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	152; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	153; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[3] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x03
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	154; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	155; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = '0' + val;
-	MOVF	r0x04, W
-	ADDLW	0x02
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVF	r0x00, W
-	MOVWF	r0x0a
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	156; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x01
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	157; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = ' ';
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	MOVF	r0x06, W
-	CALL	__gptrput1
-;	.line	158; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[10] = 0;
-	MOVF	r0x04, W
-	ADDLW	0x0a
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	CLRF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	CALL	__gptrput1
-	GOTO	_00534_DS_
-_00526_DS_:
-;	.line	159; ../my_sdcc_lib/rosso_sdcc_conversion.h	} else if (val > 999999) {
-	MOVLW	0x00
-	SUBWF	r0x03, W
-	BNZ	_00566_DS_
-	MOVLW	0x0f
-	SUBWF	r0x02, W
-	BNZ	_00566_DS_
-	MOVLW	0x42
-	SUBWF	r0x01, W
-	BNZ	_00566_DS_
-	MOVLW	0x40
-	SUBWF	r0x00, W
-_00566_DS_:
-	BTFSS	STATUS, 0
-	BRA	_00523_DS_
-;	.line	160; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[9] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x09
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	161; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	162; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[8] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x08
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	163; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	164; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[7] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x07
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	165; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	166; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[6] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x06
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	167; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	168; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[5] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x05
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	169; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	170; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[4] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x04
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	171; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	172; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[3] = '0' + val;
-	MOVF	r0x04, W
-	ADDLW	0x03
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVF	r0x00, W
-	MOVWF	r0x0a
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	173; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x02
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	174; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x01
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	175; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = ' ';
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	MOVF	r0x06, W
-	CALL	__gptrput1
-;	.line	176; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[10] = 0;
-	MOVF	r0x04, W
-	ADDLW	0x0a
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	CLRF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	CALL	__gptrput1
-	GOTO	_00534_DS_
-_00523_DS_:
-;	.line	177; ../my_sdcc_lib/rosso_sdcc_conversion.h	} else if (val > 99999) {
-	MOVLW	0x00
-	SUBWF	r0x03, W
-	BNZ	_00567_DS_
-	MOVLW	0x01
-	SUBWF	r0x02, W
-	BNZ	_00567_DS_
-	MOVLW	0x86
-	SUBWF	r0x01, W
-	BNZ	_00567_DS_
-	MOVLW	0xa0
-	SUBWF	r0x00, W
-_00567_DS_:
-	BTFSS	STATUS, 0
-	BRA	_00520_DS_
-;	.line	178; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[9] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x09
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	179; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	180; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[8] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x08
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	181; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	182; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[7] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x07
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	183; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	184; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[6] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x06
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	185; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	186; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[5] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x05
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	187; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	188; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[4] = '0' + val;
-	MOVF	r0x04, W
-	ADDLW	0x04
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVF	r0x00, W
-	MOVWF	r0x0a
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	189; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[3] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x03
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	190; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x02
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	191; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x01
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	192; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = ' ';
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	MOVF	r0x06, W
-	CALL	__gptrput1
-;	.line	193; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[10] = 0;
-	MOVF	r0x04, W
-	ADDLW	0x0a
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	CLRF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	CALL	__gptrput1
-	GOTO	_00534_DS_
-_00520_DS_:
-;	.line	194; ../my_sdcc_lib/rosso_sdcc_conversion.h	} else if (val > 9999) {
-	MOVLW	0x00
-	SUBWF	r0x03, W
-	BNZ	_00568_DS_
-	MOVLW	0x00
-	SUBWF	r0x02, W
-	BNZ	_00568_DS_
-	MOVLW	0x27
-	SUBWF	r0x01, W
-	BNZ	_00568_DS_
-	MOVLW	0x10
-	SUBWF	r0x00, W
-_00568_DS_:
-	BTFSS	STATUS, 0
-	BRA	_00517_DS_
-;	.line	195; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[9] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x09
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	196; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	197; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[8] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x08
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	198; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	199; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[7] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x07
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	200; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	201; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[6] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x06
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	202; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	203; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[5] = '0' + val;
-	MOVF	r0x04, W
-	ADDLW	0x05
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVF	r0x00, W
-	MOVWF	r0x0a
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	204; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[4] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x04
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	205; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[3] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x03
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	206; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x02
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	207; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x01
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	208; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = ' ';
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	MOVF	r0x06, W
-	CALL	__gptrput1
-;	.line	209; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[10] = 0;
-	MOVF	r0x04, W
-	ADDLW	0x0a
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	CLRF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	CALL	__gptrput1
-	GOTO	_00534_DS_
-_00517_DS_:
-;	.line	210; ../my_sdcc_lib/rosso_sdcc_conversion.h	} else if (val > 999) {
-	MOVLW	0x00
-	SUBWF	r0x03, W
-	BNZ	_00569_DS_
-	MOVLW	0x00
-	SUBWF	r0x02, W
-	BNZ	_00569_DS_
-	MOVLW	0x03
-	SUBWF	r0x01, W
-	BNZ	_00569_DS_
-	MOVLW	0xe8
-	SUBWF	r0x00, W
-_00569_DS_:
-	BTFSS	STATUS, 0
-	BRA	_00514_DS_
-;	.line	211; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[9] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x09
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	212; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	213; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[8] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x08
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	214; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	215; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[7] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x07
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	216; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	217; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[6] = '0' + val;
-	MOVF	r0x04, W
-	ADDLW	0x06
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVF	r0x00, W
-	MOVWF	r0x0a
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	218; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[5] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x05
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	219; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[4] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x04
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	220; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[3] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x03
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	221; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x02
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	222; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x01
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	223; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = ' ';
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	MOVF	r0x06, W
-	CALL	__gptrput1
-;	.line	224; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[10] = 0;
-	MOVF	r0x04, W
-	ADDLW	0x0a
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	CLRF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	CALL	__gptrput1
-	GOTO	_00534_DS_
-_00514_DS_:
-;	.line	225; ../my_sdcc_lib/rosso_sdcc_conversion.h	} else if (val > 99) {
-	MOVLW	0x00
-	SUBWF	r0x03, W
-	BNZ	_00570_DS_
-	MOVLW	0x00
-	SUBWF	r0x02, W
-	BNZ	_00570_DS_
-	MOVLW	0x00
-	SUBWF	r0x01, W
-	BNZ	_00570_DS_
-	MOVLW	0x64
-	SUBWF	r0x00, W
-_00570_DS_:
-	BTFSS	STATUS, 0
-	BRA	_00511_DS_
-;	.line	226; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[9] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x09
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	227; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVFF	PRODH, r0x02
-	MOVFF	FSR0L, r0x03
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	228; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[8] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x08
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	229; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	230; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[7] = '0' + val;
-	MOVF	r0x04, W
-	ADDLW	0x07
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVF	r0x00, W
-	MOVWF	r0x0a
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	231; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[6] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x06
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	232; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[5] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x05
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	233; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[4] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x04
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	234; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[3] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x03
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	235; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x02
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	236; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x01
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	237; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = ' ';
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	MOVF	r0x06, W
-	CALL	__gptrput1
-;	.line	238; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[10] = 0;
-	MOVF	r0x04, W
-	ADDLW	0x0a
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	CLRF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	CALL	__gptrput1
-	BRA	_00534_DS_
-_00511_DS_:
-;	.line	239; ../my_sdcc_lib/rosso_sdcc_conversion.h	} else if (val > 9) {
-	MOVLW	0x00
-	SUBWF	r0x03, W
-	BNZ	_00571_DS_
-	MOVLW	0x00
-	SUBWF	r0x02, W
-	BNZ	_00571_DS_
-	MOVLW	0x00
-	SUBWF	r0x01, W
-	BNZ	_00571_DS_
-	MOVLW	0x0a
-	SUBWF	r0x00, W
-_00571_DS_:
-	BTFSS	STATUS, 0
-	BRA	_00508_DS_
-;	.line	240; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[9] = '0' + (val % 10);
-	MOVF	r0x04, W
-	ADDLW	0x09
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__modulong
-	MOVWF	r0x0a
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	241; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x03, W
-	MOVWF	POSTDEC1
-	MOVF	r0x02, W
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divulong
-	MOVWF	r0x00
-	MOVLW	0x08
-	ADDWF	FSR1L, F
-;	.line	242; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[8] = '0' + val;
-	MOVF	r0x04, W
-	ADDLW	0x08
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVF	r0x00, W
-	MOVWF	r0x0a
-	MOVLW	0x30
-	ADDWF	r0x0a, F
-	MOVFF	r0x0a, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	243; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[7] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x07
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	244; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[6] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x06
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	245; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[5] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x05
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	246; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[4] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x04
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	247; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[3] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x03
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	248; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x02
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	249; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x01
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	250; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = ' ';
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	MOVF	r0x06, W
-	CALL	__gptrput1
-;	.line	251; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[10] = 0;
-	MOVF	r0x04, W
-	ADDLW	0x0a
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	CLRF	POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	CALL	__gptrput1
-	BRA	_00534_DS_
-_00508_DS_:
-;	.line	253; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[9] = '0' + val;
-	MOVF	r0x04, W
-	ADDLW	0x09
-	MOVWF	r0x07
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x08
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x09
-	MOVLW	0x30
-	ADDWF	r0x00, F
-	MOVFF	r0x00, POSTDEC1
-	MOVFF	r0x07, FSR0L
-	MOVFF	r0x08, PRODL
-	MOVF	r0x09, W
-	CALL	__gptrput1
-;	.line	254; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[8] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x08
-	MOVWF	r0x00
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x01
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x02
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x00, FSR0L
-	MOVFF	r0x01, PRODL
-	MOVF	r0x02, W
-	CALL	__gptrput1
-;	.line	255; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[7] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x07
-	MOVWF	r0x00
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x01
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x02
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x00, FSR0L
-	MOVFF	r0x01, PRODL
-	MOVF	r0x02, W
-	CALL	__gptrput1
-;	.line	256; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[6] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x06
-	MOVWF	r0x00
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x01
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x02
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x00, FSR0L
-	MOVFF	r0x01, PRODL
-	MOVF	r0x02, W
-	CALL	__gptrput1
-;	.line	257; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[5] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x05
-	MOVWF	r0x00
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x01
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x02
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x00, FSR0L
-	MOVFF	r0x01, PRODL
-	MOVF	r0x02, W
-	CALL	__gptrput1
-;	.line	258; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[4] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x04
-	MOVWF	r0x00
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x01
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x02
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x00, FSR0L
-	MOVFF	r0x01, PRODL
-	MOVF	r0x02, W
-	CALL	__gptrput1
-;	.line	259; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[3] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x03
-	MOVWF	r0x00
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x01
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x02
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x00, FSR0L
-	MOVFF	r0x01, PRODL
-	MOVF	r0x02, W
-	CALL	__gptrput1
-;	.line	260; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x02
-	MOVWF	r0x00
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x01
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x02
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x00, FSR0L
-	MOVFF	r0x01, PRODL
-	MOVF	r0x02, W
-	CALL	__gptrput1
-;	.line	261; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = ' ';
-	MOVF	r0x04, W
-	ADDLW	0x01
-	MOVWF	r0x00
-	MOVLW	0x00
-	ADDWFC	r0x05, W
-	MOVWF	r0x01
-	MOVLW	0x00
-	ADDWFC	r0x06, W
-	MOVWF	r0x02
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x00, FSR0L
-	MOVFF	r0x01, PRODL
-	MOVF	r0x02, W
-	CALL	__gptrput1
-;	.line	262; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = ' ';
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	MOVF	r0x06, W
-	CALL	__gptrput1
-;	.line	263; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[10] = 0;
-	MOVLW	0x0a
-	ADDWF	r0x04, F
-	MOVLW	0x00
-	ADDWFC	r0x05, F
-	ADDWFC	r0x06, F
-	CLRF	POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	MOVF	r0x06, W
-	CALL	__gptrput1
-_00534_DS_:
-	MOVFF	PREINC1, r0x0a
-	MOVFF	PREINC1, r0x09
-	MOVFF	PREINC1, r0x08
-	MOVFF	PREINC1, r0x07
-	MOVFF	PREINC1, r0x06
-	MOVFF	PREINC1, r0x05
-	MOVFF	PREINC1, r0x04
-	MOVFF	PREINC1, r0x03
-	MOVFF	PREINC1, r0x02
-	MOVFF	PREINC1, r0x01
-	MOVFF	PREINC1, r0x00
-	MOVFF	PREINC1, FSR2L
-	RETURN	
-
-; ; Starting pCode block
-S_main__word2dec	code
-_word2dec:
-;	.line	49; ../my_sdcc_lib/rosso_sdcc_conversion.h	void word2dec(uint16_t val, uint8_t *s) {
-	MOVFF	FSR2L, POSTDEC1
-	MOVFF	FSR1L, FSR2L
-	MOVFF	r0x00, POSTDEC1
-	MOVFF	r0x01, POSTDEC1
-	MOVFF	r0x02, POSTDEC1
-	MOVFF	r0x03, POSTDEC1
-	MOVFF	r0x04, POSTDEC1
-	MOVFF	r0x05, POSTDEC1
-	MOVFF	r0x06, POSTDEC1
-	MOVFF	r0x07, POSTDEC1
-	MOVFF	r0x08, POSTDEC1
-	MOVLW	0x02
-	MOVFF	PLUSW2, r0x00
-	MOVLW	0x03
-	MOVFF	PLUSW2, r0x01
-	MOVLW	0x04
-	MOVFF	PLUSW2, r0x02
-	MOVLW	0x05
-	MOVFF	PLUSW2, r0x03
-	MOVLW	0x06
-	MOVFF	PLUSW2, r0x04
-;	.line	50; ../my_sdcc_lib/rosso_sdcc_conversion.h	if (val > 9999) {
-	MOVLW	0x27
-	SUBWF	r0x01, W
-	BNZ	_00499_DS_
-	MOVLW	0x10
-	SUBWF	r0x00, W
-_00499_DS_:
-	BTFSS	STATUS, 0
-	BRA	_00483_DS_
-;	.line	51; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[4] = '0' + (val % 10);
-	MOVF	r0x02, W
-	ADDLW	0x04
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x07
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__moduint
-	MOVWF	r0x08
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x08, F
-	MOVFF	r0x08, POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	MOVF	r0x07, W
-	CALL	__gptrput1
-;	.line	52; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divuint
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-;	.line	53; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[3] = '0' + (val % 10);
-	MOVF	r0x02, W
-	ADDLW	0x03
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x07
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__moduint
-	MOVWF	r0x08
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x08, F
-	MOVFF	r0x08, POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	MOVF	r0x07, W
-	CALL	__gptrput1
-;	.line	54; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divuint
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-;	.line	55; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = '0' + (val % 10);
-	MOVF	r0x02, W
-	ADDLW	0x02
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x07
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__moduint
-	MOVWF	r0x08
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x08, F
-	MOVFF	r0x08, POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	MOVF	r0x07, W
-	CALL	__gptrput1
-;	.line	56; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divuint
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-;	.line	57; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = '0' + (val % 10);
-	MOVF	r0x02, W
-	ADDLW	0x01
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x07
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__moduint
-	MOVWF	r0x08
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x08, F
-	MOVFF	r0x08, POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	MOVF	r0x07, W
-	CALL	__gptrput1
-;	.line	58; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divuint
-	MOVWF	r0x00
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-;	.line	59; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = '0' + val;
-	MOVF	r0x00, W
-	MOVWF	r0x05
-	MOVLW	0x30
-	ADDWF	r0x05, F
-	MOVFF	r0x05, POSTDEC1
-	MOVFF	r0x02, FSR0L
-	MOVFF	r0x03, PRODL
-	MOVF	r0x04, W
-	CALL	__gptrput1
-;	.line	60; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[5] = 0;
-	MOVF	r0x02, W
-	ADDLW	0x05
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	CLRF	POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	CALL	__gptrput1
-	GOTO	_00485_DS_
-_00483_DS_:
-;	.line	61; ../my_sdcc_lib/rosso_sdcc_conversion.h	} else if (val > 999) {
-	MOVLW	0x03
-	SUBWF	r0x01, W
-	BNZ	_00500_DS_
-	MOVLW	0xe8
-	SUBWF	r0x00, W
-_00500_DS_:
-	BTFSS	STATUS, 0
-	BRA	_00480_DS_
-;	.line	62; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[4] = '0' + (val % 10);
-	MOVF	r0x02, W
-	ADDLW	0x04
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x07
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__moduint
-	MOVWF	r0x08
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x08, F
-	MOVFF	r0x08, POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	MOVF	r0x07, W
-	CALL	__gptrput1
-;	.line	63; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divuint
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-;	.line	64; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[3] = '0' + (val % 10);
-	MOVF	r0x02, W
-	ADDLW	0x03
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x07
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__moduint
-	MOVWF	r0x08
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x08, F
-	MOVFF	r0x08, POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	MOVF	r0x07, W
-	CALL	__gptrput1
-;	.line	65; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divuint
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-;	.line	66; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = '0' + (val % 10);
-	MOVF	r0x02, W
-	ADDLW	0x02
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x07
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__moduint
-	MOVWF	r0x08
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x08, F
-	MOVFF	r0x08, POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	MOVF	r0x07, W
-	CALL	__gptrput1
-;	.line	67; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divuint
-	MOVWF	r0x00
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-;	.line	68; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = '0' + val;
-	MOVF	r0x02, W
-	ADDLW	0x01
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x07
-	MOVF	r0x00, W
-	MOVWF	r0x08
-	MOVLW	0x30
-	ADDWF	r0x08, F
-	MOVFF	r0x08, POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	MOVF	r0x07, W
-	CALL	__gptrput1
-;	.line	69; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = ' ';
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x02, FSR0L
-	MOVFF	r0x03, PRODL
-	MOVF	r0x04, W
-	CALL	__gptrput1
-;	.line	70; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[5] = 0;
-	MOVF	r0x02, W
-	ADDLW	0x05
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	CLRF	POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	CALL	__gptrput1
-	BRA	_00485_DS_
-_00480_DS_:
-;	.line	71; ../my_sdcc_lib/rosso_sdcc_conversion.h	} else if (val > 99) {
-	MOVLW	0x00
-	SUBWF	r0x01, W
-	BNZ	_00501_DS_
-	MOVLW	0x64
-	SUBWF	r0x00, W
-_00501_DS_:
-	BTFSS	STATUS, 0
-	BRA	_00477_DS_
-;	.line	72; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[4] = '0' + (val % 10);
-	MOVF	r0x02, W
-	ADDLW	0x04
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x07
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__moduint
-	MOVWF	r0x08
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x08, F
-	MOVFF	r0x08, POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	MOVF	r0x07, W
-	CALL	__gptrput1
-;	.line	73; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divuint
-	MOVWF	r0x00
-	MOVFF	PRODL, r0x01
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-;	.line	74; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[3] = '0' + (val % 10);
-	MOVF	r0x02, W
-	ADDLW	0x03
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x07
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__moduint
-	MOVWF	r0x08
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x08, F
-	MOVFF	r0x08, POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	MOVF	r0x07, W
-	CALL	__gptrput1
-;	.line	75; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divuint
-	MOVWF	r0x00
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-;	.line	76; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = '0' + val;
-	MOVF	r0x02, W
-	ADDLW	0x02
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x07
-	MOVF	r0x00, W
-	MOVWF	r0x08
-	MOVLW	0x30
-	ADDWF	r0x08, F
-	MOVFF	r0x08, POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	MOVF	r0x07, W
-	CALL	__gptrput1
-;	.line	77; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = ' ';
-	MOVF	r0x02, W
-	ADDLW	0x01
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x07
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	MOVF	r0x07, W
-	CALL	__gptrput1
-;	.line	78; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = ' ';
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x02, FSR0L
-	MOVFF	r0x03, PRODL
-	MOVF	r0x04, W
-	CALL	__gptrput1
-;	.line	79; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[5] = 0;
-	MOVF	r0x02, W
-	ADDLW	0x05
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	CLRF	POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	CALL	__gptrput1
-	BRA	_00485_DS_
-_00477_DS_:
-;	.line	80; ../my_sdcc_lib/rosso_sdcc_conversion.h	} else if (val > 9) {
-	MOVLW	0x00
-	SUBWF	r0x01, W
-	BNZ	_00502_DS_
-	MOVLW	0x0a
-	SUBWF	r0x00, W
-_00502_DS_:
-	BTFSS	STATUS, 0
-	BRA	_00474_DS_
-;	.line	81; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[4] = '0' + (val % 10);
-	MOVF	r0x02, W
-	ADDLW	0x04
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x07
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__moduint
-	MOVWF	r0x08
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-	MOVLW	0x30
-	ADDWF	r0x08, F
-	MOVFF	r0x08, POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	MOVF	r0x07, W
-	CALL	__gptrput1
-;	.line	82; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	CLRF	POSTDEC1
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVF	r0x01, W
-	MOVWF	POSTDEC1
-	MOVF	r0x00, W
-	MOVWF	POSTDEC1
-	CALL	__divuint
-	MOVWF	r0x00
-	MOVLW	0x04
-	ADDWF	FSR1L, F
-;	.line	83; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[3] = '0' + val;
-	MOVF	r0x02, W
-	ADDLW	0x03
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x07
-	MOVF	r0x00, W
-	MOVWF	r0x08
-	MOVLW	0x30
-	ADDWF	r0x08, F
-	MOVFF	r0x08, POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	MOVF	r0x07, W
-	CALL	__gptrput1
-;	.line	84; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = ' ';
-	MOVF	r0x02, W
-	ADDLW	0x02
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x07
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	MOVF	r0x07, W
-	CALL	__gptrput1
-;	.line	85; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = ' ';
-	MOVF	r0x02, W
-	ADDLW	0x01
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x07
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	MOVF	r0x07, W
-	CALL	__gptrput1
-;	.line	86; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = ' ';
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x02, FSR0L
-	MOVFF	r0x03, PRODL
-	MOVF	r0x04, W
-	CALL	__gptrput1
-;	.line	87; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[5] = 0;
-	MOVF	r0x02, W
-	ADDLW	0x05
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	CLRF	POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	CALL	__gptrput1
-	BRA	_00485_DS_
-_00474_DS_:
-;	.line	89; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[4] = '0' + val;
-	MOVF	r0x02, W
-	ADDLW	0x04
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x07
-	MOVLW	0x30
-	ADDWF	r0x00, F
-	MOVFF	r0x00, POSTDEC1
-	MOVFF	r0x05, FSR0L
-	MOVFF	r0x06, PRODL
-	MOVF	r0x07, W
-	CALL	__gptrput1
-;	.line	90; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[3] = ' ';
-	MOVF	r0x02, W
-	ADDLW	0x03
-	MOVWF	r0x00
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x01
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x05
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x00, FSR0L
-	MOVFF	r0x01, PRODL
-	MOVF	r0x05, W
-	CALL	__gptrput1
-;	.line	91; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = ' ';
-	MOVF	r0x02, W
-	ADDLW	0x02
-	MOVWF	r0x00
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x01
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x05
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x00, FSR0L
-	MOVFF	r0x01, PRODL
-	MOVF	r0x05, W
-	CALL	__gptrput1
-;	.line	92; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = ' ';
-	MOVF	r0x02, W
-	ADDLW	0x01
-	MOVWF	r0x00
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x01
-	MOVLW	0x00
-	ADDWFC	r0x04, W
-	MOVWF	r0x05
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x00, FSR0L
-	MOVFF	r0x01, PRODL
-	MOVF	r0x05, W
-	CALL	__gptrput1
-;	.line	93; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = ' ';
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x02, FSR0L
-	MOVFF	r0x03, PRODL
-	MOVF	r0x04, W
-	CALL	__gptrput1
-;	.line	94; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[5] = 0;
-	MOVLW	0x05
-	ADDWF	r0x02, F
-	MOVLW	0x00
-	ADDWFC	r0x03, F
-	ADDWFC	r0x04, F
-	CLRF	POSTDEC1
-	MOVFF	r0x02, FSR0L
-	MOVFF	r0x03, PRODL
-	MOVF	r0x04, W
-	CALL	__gptrput1
-_00485_DS_:
-	MOVFF	PREINC1, r0x08
-	MOVFF	PREINC1, r0x07
-	MOVFF	PREINC1, r0x06
-	MOVFF	PREINC1, r0x05
-	MOVFF	PREINC1, r0x04
-	MOVFF	PREINC1, r0x03
-	MOVFF	PREINC1, r0x02
-	MOVFF	PREINC1, r0x01
-	MOVFF	PREINC1, r0x00
-	MOVFF	PREINC1, FSR2L
-	RETURN	
-
-; ; Starting pCode block
-S_main__byte2dec	code
-_byte2dec:
-;	.line	27; ../my_sdcc_lib/rosso_sdcc_conversion.h	void byte2dec(uint8_t val, uint8_t *s) {
-	MOVFF	FSR2L, POSTDEC1
-	MOVFF	FSR1L, FSR2L
-	MOVFF	r0x00, POSTDEC1
-	MOVFF	r0x01, POSTDEC1
-	MOVFF	r0x02, POSTDEC1
-	MOVFF	r0x03, POSTDEC1
-	MOVFF	r0x04, POSTDEC1
-	MOVFF	r0x05, POSTDEC1
-	MOVFF	r0x06, POSTDEC1
-	MOVFF	r0x07, POSTDEC1
-	MOVLW	0x02
-	MOVFF	PLUSW2, r0x00
-	MOVLW	0x03
-	MOVFF	PLUSW2, r0x01
-	MOVLW	0x04
-	MOVFF	PLUSW2, r0x02
-	MOVLW	0x05
-	MOVFF	PLUSW2, r0x03
-;	.line	28; ../my_sdcc_lib/rosso_sdcc_conversion.h	if (val > 99) {
-	MOVLW	0x64
-	SUBWF	r0x00, W
-	BTFSS	STATUS, 0
-	BRA	_00457_DS_
-;	.line	29; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = '0' + (val % 10);
-	MOVF	r0x01, W
-	ADDLW	0x02
-	MOVWF	r0x04
-	MOVLW	0x00
-	ADDWFC	r0x02, W
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVFF	r0x00, POSTDEC1
-	CALL	__moduchar
-	MOVWF	r0x07
-	MOVF	PREINC1, W
-	MOVF	PREINC1, W
-	MOVLW	0x30
-	ADDWF	r0x07, F
-	MOVFF	r0x07, POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	MOVF	r0x06, W
-	CALL	__gptrput1
-;	.line	30; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVFF	r0x00, POSTDEC1
-	CALL	__divuchar
-	MOVWF	r0x00
-	MOVF	PREINC1, W
-	MOVF	PREINC1, W
-;	.line	31; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = '0' + (val % 10);
-	MOVF	r0x01, W
-	ADDLW	0x01
-	MOVWF	r0x04
-	MOVLW	0x00
-	ADDWFC	r0x02, W
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVFF	r0x00, POSTDEC1
-	CALL	__moduchar
-	MOVWF	r0x07
-	MOVF	PREINC1, W
-	MOVF	PREINC1, W
-	MOVLW	0x30
-	ADDWF	r0x07, F
-	MOVFF	r0x07, POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	MOVF	r0x06, W
-	CALL	__gptrput1
-;	.line	32; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVFF	r0x00, POSTDEC1
-	CALL	__divuchar
-	MOVWF	r0x00
-	MOVF	PREINC1, W
-	MOVF	PREINC1, W
-;	.line	33; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = '0' + val;
-	MOVF	r0x00, W
-	MOVWF	r0x04
-	MOVLW	0x30
-	ADDWF	r0x04, F
-	MOVFF	r0x04, POSTDEC1
-	MOVFF	r0x01, FSR0L
-	MOVFF	r0x02, PRODL
-	MOVF	r0x03, W
-	CALL	__gptrput1
-;	.line	34; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[3] = 0;
-	MOVF	r0x01, W
-	ADDLW	0x03
-	MOVWF	r0x04
-	MOVLW	0x00
-	ADDWFC	r0x02, W
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	CLRF	POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	CALL	__gptrput1
-	BRA	_00459_DS_
-_00457_DS_:
-;	.line	35; ../my_sdcc_lib/rosso_sdcc_conversion.h	} else if (val > 9) {
-	MOVLW	0x0a
-	SUBWF	r0x00, W
-	BTFSS	STATUS, 0
-	BRA	_00454_DS_
-;	.line	36; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = '0' + (val % 10);
-	MOVF	r0x01, W
-	ADDLW	0x02
-	MOVWF	r0x04
-	MOVLW	0x00
-	ADDWFC	r0x02, W
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVFF	r0x00, POSTDEC1
-	CALL	__moduchar
-	MOVWF	r0x07
-	MOVF	PREINC1, W
-	MOVF	PREINC1, W
-	MOVLW	0x30
-	ADDWF	r0x07, F
-	MOVFF	r0x07, POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	MOVF	r0x06, W
-	CALL	__gptrput1
-;	.line	37; ../my_sdcc_lib/rosso_sdcc_conversion.h	val /= 10;
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVFF	r0x00, POSTDEC1
-	CALL	__divuchar
-	MOVWF	r0x00
-	MOVF	PREINC1, W
-	MOVF	PREINC1, W
-;	.line	38; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = '0' + val;
-	MOVF	r0x01, W
-	ADDLW	0x01
-	MOVWF	r0x04
-	MOVLW	0x00
-	ADDWFC	r0x02, W
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVF	r0x00, W
-	MOVWF	r0x07
-	MOVLW	0x30
-	ADDWF	r0x07, F
-	MOVFF	r0x07, POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	MOVF	r0x06, W
-	CALL	__gptrput1
-;	.line	39; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = ' ';
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x01, FSR0L
-	MOVFF	r0x02, PRODL
-	MOVF	r0x03, W
-	CALL	__gptrput1
-;	.line	40; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[3] = 0;
-	MOVF	r0x01, W
-	ADDLW	0x03
-	MOVWF	r0x04
-	MOVLW	0x00
-	ADDWFC	r0x02, W
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	CLRF	POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	CALL	__gptrput1
-	BRA	_00459_DS_
-_00454_DS_:
-;	.line	42; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[2] = '0' + val;
-	MOVF	r0x01, W
-	ADDLW	0x02
-	MOVWF	r0x04
-	MOVLW	0x00
-	ADDWFC	r0x02, W
-	MOVWF	r0x05
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x06
-	MOVLW	0x30
-	ADDWF	r0x00, F
-	MOVFF	r0x00, POSTDEC1
-	MOVFF	r0x04, FSR0L
-	MOVFF	r0x05, PRODL
-	MOVF	r0x06, W
-	CALL	__gptrput1
-;	.line	43; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[1] = ' ';
-	MOVF	r0x01, W
-	ADDLW	0x01
-	MOVWF	r0x00
-	MOVLW	0x00
-	ADDWFC	r0x02, W
-	MOVWF	r0x04
-	MOVLW	0x00
-	ADDWFC	r0x03, W
-	MOVWF	r0x05
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x00, FSR0L
-	MOVFF	r0x04, PRODL
-	MOVF	r0x05, W
-	CALL	__gptrput1
-;	.line	44; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[0] = ' ';
-	MOVLW	0x20
-	MOVWF	POSTDEC1
-	MOVFF	r0x01, FSR0L
-	MOVFF	r0x02, PRODL
-	MOVF	r0x03, W
-	CALL	__gptrput1
-;	.line	45; ../my_sdcc_lib/rosso_sdcc_conversion.h	s[3] = 0;
-	MOVLW	0x03
-	ADDWF	r0x01, F
-	MOVLW	0x00
-	ADDWFC	r0x02, F
-	ADDWFC	r0x03, F
-	CLRF	POSTDEC1
-	MOVFF	r0x01, FSR0L
-	MOVFF	r0x02, PRODL
-	MOVF	r0x03, W
-	CALL	__gptrput1
-_00459_DS_:
-	MOVFF	PREINC1, r0x07
-	MOVFF	PREINC1, r0x06
-	MOVFF	PREINC1, r0x05
-	MOVFF	PREINC1, r0x04
-	MOVFF	PREINC1, r0x03
-	MOVFF	PREINC1, r0x02
-	MOVFF	PREINC1, r0x01
-	MOVFF	PREINC1, r0x00
-	MOVFF	PREINC1, FSR2L
-	RETURN	
-
-; ; Starting pCode block
-S_main__nibble2hex	code
-_nibble2hex:
-;	.line	19; ../my_sdcc_lib/rosso_sdcc_conversion.h	uint8_t nibble2hex(uint8_t val) {
-	MOVFF	FSR2L, POSTDEC1
-	MOVFF	FSR1L, FSR2L
-	MOVFF	r0x00, POSTDEC1
-	MOVFF	r0x01, POSTDEC1
-	MOVLW	0x02
-	MOVFF	PLUSW2, r0x00
-;	.line	21; ../my_sdcc_lib/rosso_sdcc_conversion.h	s = '0' + (val & 0xf);
-	MOVLW	0x0f
-	ANDWF	r0x00, F
-	MOVLW	0x30
-	ADDWF	r0x00, F
-;	.line	22; ../my_sdcc_lib/rosso_sdcc_conversion.h	if (s > '9')
-	MOVLW	0x3a
-	SUBWF	r0x00, W
-	BNC	_00441_DS_
-;	.line	23; ../my_sdcc_lib/rosso_sdcc_conversion.h	s += 'A' - '9' - 1;
-	MOVF	r0x00, W
-	MOVWF	r0x01
-	MOVLW	0x07
-	ADDWF	r0x01, W
-	MOVWF	r0x00
-_00441_DS_:
-;	.line	24; ../my_sdcc_lib/rosso_sdcc_conversion.h	return s;
-	MOVF	r0x00, W
-	MOVFF	PREINC1, r0x01
-	MOVFF	PREINC1, r0x00
-	MOVFF	PREINC1, FSR2L
-	RETURN	
-
-; ; Starting pCode block
-S_main__bcdtodec	code
-_bcdtodec:
-;	.line	15; ../my_sdcc_lib/rosso_sdcc_conversion.h	uint8_t bcdtodec(uint8_t pValue) {
-	MOVFF	FSR2L, POSTDEC1
-	MOVFF	FSR1L, FSR2L
-	MOVFF	r0x00, POSTDEC1
-	MOVFF	r0x01, POSTDEC1
-	MOVLW	0x02
-	MOVFF	PLUSW2, r0x00
-;	.line	16; ../my_sdcc_lib/rosso_sdcc_conversion.h	return ((pValue >> 4) * 10 + (pValue & 0x0F));
-	SWAPF	r0x00, W
-	ANDLW	0x0f
-; #	MOVWF	r0x01
-; #;;multiply lit val:0x0a by variable r0x01 and store in r0x01
-; #	MOVF	r0x01, W
-	MULLW	0x0a
-	MOVFF	PRODL, r0x01
-	MOVLW	0x0f
-	ANDWF	r0x00, F
-	MOVF	r0x00, W
-	ADDWF	r0x01, F
-	MOVF	r0x01, W
-	MOVFF	PREINC1, r0x01
-	MOVFF	PREINC1, r0x00
-	MOVFF	PREINC1, FSR2L
-	RETURN	
-
-; ; Starting pCode block
-S_main__dectobcd	code
-_dectobcd:
-;	.line	11; ../my_sdcc_lib/rosso_sdcc_conversion.h	uint8_t dectobcd(uint8_t pValue) {
-	MOVFF	FSR2L, POSTDEC1
-	MOVFF	FSR1L, FSR2L
-	MOVFF	r0x00, POSTDEC1
-	MOVFF	r0x01, POSTDEC1
-	MOVFF	r0x02, POSTDEC1
-	MOVLW	0x02
-	MOVFF	PLUSW2, r0x00
-;	.line	12; ../my_sdcc_lib/rosso_sdcc_conversion.h	return (((pValue / 10) << 4) | (pValue % 10));
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVFF	r0x00, POSTDEC1
-	CALL	__divuchar
-	MOVWF	r0x01
-	MOVF	PREINC1, W
-	MOVF	PREINC1, W
-	SWAPF	r0x01, W
-	ANDLW	0xf0
-	MOVWF	r0x02
-	MOVLW	0x0a
-	MOVWF	POSTDEC1
-	MOVFF	r0x00, POSTDEC1
-	CALL	__moduchar
-	MOVWF	r0x00
-	MOVF	PREINC1, W
-	MOVF	PREINC1, W
-	MOVF	r0x00, W
-	IORWF	r0x02, F
-	MOVF	r0x02, W
-	MOVFF	PREINC1, r0x02
-	MOVFF	PREINC1, r0x01
-	MOVFF	PREINC1, r0x00
-	MOVFF	PREINC1, FSR2L
-	RETURN	
-
-; ; Starting pCode block
 S_main__lcd_init	code
 _lcd_init:
-;	.line	225; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_init(CHIP chipset) {
+;	.line	220; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_init(CHIP chipset) {
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
 	MOVLW	0x02
 	MOVFF	PLUSW2, r0x00
-;	.line	244; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_RS_DIR = 0;
+;	.line	239; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_RS_DIR = 0;
 	BCF	_TRISEbits, 1
-;	.line	245; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_EN_DIR = 0;
+;	.line	240; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_EN_DIR = 0;
 	BCF	_TRISEbits, 2
-;	.line	246; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D4_DIR = 0;
+;	.line	241; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D4_DIR = 0;
 	BCF	_TRISBbits, 4
-;	.line	247; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D5_DIR = 0;
+;	.line	242; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D5_DIR = 0;
 	BCF	_TRISBbits, 5
-;	.line	248; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D6_DIR = 0;
+;	.line	243; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D6_DIR = 0;
 	BCF	_TRISBbits, 6
-;	.line	249; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D7_DIR = 0;
+;	.line	244; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D7_DIR = 0;
 	BCF	_TRISBbits, 7
-;	.line	251; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_RS = 0; // set to control char mode
+;	.line	246; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_RS = 0; // set to control char mode
 	BCF	_LATEbits, 1
-;	.line	252; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (chipset == LCD_HD44780) {
+;	.line	247; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (chipset == LCD_HD44780) {
 	MOVF	r0x00, W
 	BTFSS	STATUS, 2
-	BRA	_00414_DS_
-;	.line	253; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_25ms(); // power-up delay (> 15 ms)
+	BRA	_00394_DS_
+;	.line	248; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_25ms(); // power-up delay (> 15 ms)
 	MOVLW	0x28
 	CALL	_delay10ktcy
-;	.line	254; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000011); // function set
+;	.line	249; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000011); // function set
 	MOVLW	0x03
 	MOVWF	POSTDEC1
 	CALL	___lcd_write_nibble
 	MOVF	POSTINC1, F
-;	.line	255; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_5ms(); // > 4.1 milliseconds
+;	.line	250; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_5ms(); // > 4.1 milliseconds
 	MOVLW	0x50
 	CALL	_delay1ktcy
-;	.line	256; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000011); // function set
+;	.line	251; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000011); // function set
 	MOVLW	0x03
 	MOVWF	POSTDEC1
 	CALL	___lcd_write_nibble
 	MOVF	POSTINC1, F
-;	.line	257; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_100us(); // > 100 us
+;	.line	252; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_100us(); // > 100 us
 	MOVLW	0xa0
 	CALL	_delay10tcy
-;	.line	258; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000011); // function set
+;	.line	253; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000011); // function set
 	MOVLW	0x03
 	MOVWF	POSTDEC1
 	CALL	___lcd_write_nibble
 	MOVF	POSTINC1, F
-;	.line	259; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_35us(); // > 37 us
+;	.line	254; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_35us(); // > 37 us
 	MOVLW	0x38
 	CALL	_delay10tcy
 	nop	
@@ -6011,12 +853,12 @@ _lcd_init:
 	nop	
 	nop	
 	nop	
-;	.line	261; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000010); // select 4-bits mode
+;	.line	256; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000010); // select 4-bits mode
 	MOVLW	0x02
 	MOVWF	POSTDEC1
 	CALL	___lcd_write_nibble
 	MOVF	POSTINC1, F
-;	.line	262; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_35us(); // > 37 us
+;	.line	257; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_35us(); // > 37 us
 	MOVLW	0x38
 	CALL	_delay10tcy
 	nop	
@@ -6067,68 +909,68 @@ _lcd_init:
 	nop	
 	nop	
 	nop	
-;	.line	264; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(0b00101000); // 2 lines, 5x8 dots font
+;	.line	259; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(0b00101000); // 2 lines, 5x8 dots font
 	MOVLW	0x28
 	MOVWF	POSTDEC1
 	CALL	__lcd_write_command
 	MOVF	POSTINC1, F
-;	.line	265; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(0b00011100); // cursor (not data) move right
+;	.line	260; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(0b00011100); // cursor (not data) move right
 	MOVLW	0x1c
 	MOVWF	POSTDEC1
 	CALL	__lcd_write_command
 	MOVF	POSTINC1, F
-;	.line	266; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(0b00001100); // display on, cursor off, no blink
+;	.line	261; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(0b00001100); // display on, cursor off, no blink
 	MOVLW	0x0c
 	MOVWF	POSTDEC1
 	CALL	__lcd_write_command
 	MOVF	POSTINC1, F
-;	.line	267; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(0b00000110); // cursor shift right, no data shift
+;	.line	262; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(0b00000110); // cursor shift right, no data shift
 	MOVLW	0x06
 	MOVWF	POSTDEC1
 	CALL	__lcd_write_command
 	MOVF	POSTINC1, F
-;	.line	269; ../my_sdcc_lib/rosso_sdcc_lcd4.h	lcd_clear_screen(); // clear display
+;	.line	264; ../my_sdcc_lib/rosso_sdcc_lcd4.h	lcd_clear_screen(); // clear display
 	CALL	_lcd_clear_screen
-	BRA	_00416_DS_
-_00414_DS_:
-;	.line	270; ../my_sdcc_lib/rosso_sdcc_lcd4.h	} else if (chipset == LCD_ST7066U) {
+	BRA	_00396_DS_
+_00394_DS_:
+;	.line	265; ../my_sdcc_lib/rosso_sdcc_lcd4.h	} else if (chipset == LCD_ST7066U) {
 	MOVF	r0x00, W
 	XORLW	0x01
-	BZ	_00425_DS_
-	BRA	_00416_DS_
-_00425_DS_:
-;	.line	271; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000011);
+	BZ	_00405_DS_
+	BRA	_00396_DS_
+_00405_DS_:
+;	.line	266; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000011);
 	MOVLW	0x03
 	MOVWF	POSTDEC1
 	CALL	___lcd_write_nibble
 	MOVF	POSTINC1, F
-;	.line	272; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_40us();
+;	.line	267; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_40us();
 	MOVLW	0x40
 	CALL	_delay10tcy
-;	.line	273; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000010);
+;	.line	268; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000010);
 	MOVLW	0x02
 	MOVWF	POSTDEC1
 	CALL	___lcd_write_nibble
 	MOVF	POSTINC1, F
-;	.line	274; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00001100);
+;	.line	269; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00001100);
 	MOVLW	0x0c
 	MOVWF	POSTDEC1
 	CALL	___lcd_write_nibble
 	MOVF	POSTINC1, F
-;	.line	275; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_40us();
+;	.line	270; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_40us();
 	MOVLW	0x40
 	CALL	_delay10tcy
-;	.line	276; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000010);
+;	.line	271; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000010);
 	MOVLW	0x02
 	MOVWF	POSTDEC1
 	CALL	___lcd_write_nibble
 	MOVF	POSTINC1, F
-;	.line	277; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00001100);
+;	.line	272; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00001100);
 	MOVLW	0x0c
 	MOVWF	POSTDEC1
 	CALL	___lcd_write_nibble
 	MOVF	POSTINC1, F
-;	.line	278; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_35us(); // > 37 us
+;	.line	273; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_35us(); // > 37 us
 	MOVLW	0x38
 	CALL	_delay10tcy
 	nop	
@@ -6179,17 +1021,17 @@ _00425_DS_:
 	nop	
 	nop	
 	nop	
-;	.line	280; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000000); // display on / off
+;	.line	275; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000000); // display on / off
 	MOVLW	0x00
 	MOVWF	POSTDEC1
 	CALL	___lcd_write_nibble
 	MOVF	POSTINC1, F
-;	.line	281; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00001100);
+;	.line	276; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00001100);
 	MOVLW	0x0c
 	MOVWF	POSTDEC1
 	CALL	___lcd_write_nibble
 	MOVF	POSTINC1, F
-;	.line	282; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_35us(); // > 37 us
+;	.line	277; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_35us(); // > 37 us
 	MOVLW	0x38
 	CALL	_delay10tcy
 	nop	
@@ -6240,36 +1082,36 @@ _00425_DS_:
 	nop	
 	nop	
 	nop	
-;	.line	284; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000000); // display clear
+;	.line	279; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000000); // display clear
 	MOVLW	0x00
 	MOVWF	POSTDEC1
 	CALL	___lcd_write_nibble
 	MOVF	POSTINC1, F
-;	.line	285; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000001);
+;	.line	280; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000001);
 	MOVLW	0x01
 	MOVWF	POSTDEC1
 	CALL	___lcd_write_nibble
 	MOVF	POSTINC1, F
-;	.line	286; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_1ms();
+;	.line	281; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_1ms();
 	MOVLW	0xa0
 	CALL	_delay100tcy
-;	.line	287; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_500us();
+;	.line	282; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_500us();
 	MOVLW	0x50
 	CALL	_delay100tcy
-;	.line	288; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_40us();
+;	.line	283; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_40us();
 	MOVLW	0x40
 	CALL	_delay10tcy
-;	.line	289; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000000); // entry mode set
+;	.line	284; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000000); // entry mode set
 	MOVLW	0x00
 	MOVWF	POSTDEC1
 	CALL	___lcd_write_nibble
 	MOVF	POSTINC1, F
-;	.line	290; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000110);
+;	.line	285; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000110);
 	MOVLW	0x06
 	MOVWF	POSTDEC1
 	CALL	___lcd_write_nibble
 	MOVF	POSTINC1, F
-;	.line	291; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_35us(); // > 37 us
+;	.line	286; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_35us(); // > 37 us
 	MOVLW	0x38
 	CALL	_delay10tcy
 	nop	
@@ -6320,26 +1162,26 @@ _00425_DS_:
 	nop	
 	nop	
 	nop	
-;	.line	293; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000000); // display clear
+;	.line	288; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000000); // display clear
 	MOVLW	0x00
 	MOVWF	POSTDEC1
 	CALL	___lcd_write_nibble
 	MOVF	POSTINC1, F
-;	.line	294; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000001);
+;	.line	289; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000001);
 	MOVLW	0x01
 	MOVWF	POSTDEC1
 	CALL	___lcd_write_nibble
 	MOVF	POSTINC1, F
-;	.line	295; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_1ms();
+;	.line	290; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_1ms();
 	MOVLW	0xa0
 	CALL	_delay100tcy
-;	.line	296; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_500us();
+;	.line	291; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_500us();
 	MOVLW	0x50
 	CALL	_delay100tcy
-;	.line	297; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_40us();
+;	.line	292; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_40us();
 	MOVLW	0x40
 	CALL	_delay10tcy
-_00416_DS_:
+_00396_DS_:
 	MOVFF	PREINC1, r0x00
 	MOVFF	PREINC1, FSR2L
 	RETURN	
@@ -6347,7 +1189,7 @@ _00416_DS_:
 ; ; Starting pCode block
 S_main__lcd_progress	code
 _lcd_progress:
-;	.line	217; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_progress(uint8_t line, uint8_t amount, uint8_t pattern) {
+;	.line	212; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_progress(uint8_t line, uint8_t amount, uint8_t pattern) {
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
@@ -6361,31 +1203,31 @@ _lcd_progress:
 	MOVFF	PLUSW2, r0x01
 	MOVLW	0x04
 	MOVFF	PLUSW2, r0x02
-;	.line	219; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_POS = _lcd_line2index(line);
+;	.line	214; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_POS = _lcd_line2index(line);
 	MOVF	r0x00, W
 	MOVWF	POSTDEC1
 	CALL	__lcd_line2index
 	BANKSEL	_LCD_POS
 	MOVWF	_LCD_POS, B
 	MOVF	POSTINC1, F
-;	.line	220; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_restore_cursor();
+;	.line	215; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_restore_cursor();
 	CALL	__lcd_restore_cursor
-;	.line	221; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < amount; i++) lcd_write_char(pattern);
+;	.line	216; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < amount; i++) lcd_write_char(pattern);
 	CLRF	r0x00
-_00384_DS_:
+_00364_DS_:
 	MOVF	r0x01, W
 	SUBWF	r0x00, W
-	BC	_00381_DS_
+	BC	_00361_DS_
 	MOVF	r0x02, W
 	MOVWF	POSTDEC1
 	CALL	_lcd_write_char
 	MOVF	POSTINC1, F
 	INCF	r0x00, F
-	BRA	_00384_DS_
-_00381_DS_:
-;	.line	222; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < LCD_NR_CHARS - amount; i++) lcd_write_char(' ');
+	BRA	_00364_DS_
+_00361_DS_:
+;	.line	217; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < LCD_NR_CHARS - amount; i++) lcd_write_char(' ');
 	CLRF	r0x00
-_00387_DS_:
+_00367_DS_:
 	MOVFF	r0x01, r0x02
 	CLRF	r0x03
 	MOVF	r0x02, W
@@ -6399,18 +1241,18 @@ _00387_DS_:
 	MOVF	r0x03, W
 	ADDLW	0x80
 	SUBWF	PRODL, W
-	BNZ	_00406_DS_
+	BNZ	_00386_DS_
 	MOVF	r0x02, W
 	SUBWF	r0x04, W
-_00406_DS_:
-	BC	_00389_DS_
+_00386_DS_:
+	BC	_00369_DS_
 	MOVLW	0x20
 	MOVWF	POSTDEC1
 	CALL	_lcd_write_char
 	MOVF	POSTINC1, F
 	INCF	r0x00, F
-	BRA	_00387_DS_
-_00389_DS_:
+	BRA	_00367_DS_
+_00369_DS_:
 	MOVFF	PREINC1, r0x04
 	MOVFF	PREINC1, r0x03
 	MOVFF	PREINC1, r0x02
@@ -6422,24 +1264,24 @@ _00389_DS_:
 ; ; Starting pCode block
 S_main__lcd_clear_line	code
 _lcd_clear_line:
-;	.line	206; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_clear_line(uint8_t line) {
+;	.line	201; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_clear_line(uint8_t line) {
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
 	MOVLW	0x02
 	MOVFF	PLUSW2, r0x00
-;	.line	209; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_POS = _lcd_line2index(line);
+;	.line	204; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_POS = _lcd_line2index(line);
 	MOVF	r0x00, W
 	MOVWF	POSTDEC1
 	CALL	__lcd_line2index
 	BANKSEL	_LCD_POS
 	MOVWF	_LCD_POS, B
 	MOVF	POSTINC1, F
-;	.line	210; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_restore_cursor();
+;	.line	205; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_restore_cursor();
 	CALL	__lcd_restore_cursor
-;	.line	212; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < LCD_NR_CHARS; i++) lcd_write_char(' ');
+;	.line	207; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < LCD_NR_CHARS; i++) lcd_write_char(' ');
 	CLRF	r0x00
-_00365_DS_:
+_00345_DS_:
 	MOVLW	0x20
 	MOVWF	POSTDEC1
 	CALL	_lcd_write_char
@@ -6447,8 +1289,8 @@ _00365_DS_:
 	INCF	r0x00, F
 	MOVLW	0x10
 	SUBWF	r0x00, W
-	BNC	_00365_DS_
-;	.line	214; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_restore_cursor();
+	BNC	_00345_DS_
+;	.line	209; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_restore_cursor();
 	CALL	__lcd_restore_cursor
 	MOVFF	PREINC1, r0x00
 	MOVFF	PREINC1, FSR2L
@@ -6457,18 +1299,18 @@ _00365_DS_:
 ; ; Starting pCode block
 S_main__lcd_home	code
 _lcd_home:
-;	.line	200; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(LCD_RETURN_HOME);
+;	.line	195; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(LCD_RETURN_HOME);
 	MOVLW	0x02
 	MOVWF	POSTDEC1
 	CALL	__lcd_write_command
 	MOVF	POSTINC1, F
-;	.line	201; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_1ms();
+;	.line	196; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_1ms();
 	MOVLW	0xa0
 	CALL	_delay100tcy
-;	.line	202; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_500us();
+;	.line	197; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_500us();
 	MOVLW	0x50
 	CALL	_delay100tcy
-;	.line	203; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_300us();
+;	.line	198; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_300us();
 	MOVLW	0x30
 	CALL	_delay100tcy
 	RETURN	
@@ -6476,7 +1318,7 @@ _lcd_home:
 ; ; Starting pCode block
 S_main__lcd_cursor_blink_display	code
 _lcd_cursor_blink_display:
-;	.line	190; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_cursor_blink_display(bit_t cursor, bit_t blink, bit_t display) {
+;	.line	185; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_cursor_blink_display(bit_t cursor, bit_t blink, bit_t display) {
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
@@ -6489,27 +1331,27 @@ _lcd_cursor_blink_display:
 	MOVFF	PLUSW2, r0x01
 	MOVLW	0x04
 	MOVFF	PLUSW2, r0x02
-;	.line	192; ../my_sdcc_lib/rosso_sdcc_lcd4.h	reg = LCD_DISPLAY_ONOFF;
+;	.line	187; ../my_sdcc_lib/rosso_sdcc_lcd4.h	reg = LCD_DISPLAY_ONOFF;
 	MOVLW	0x08
 	MOVWF	r0x03
-;	.line	193; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (display) reg = reg + 4;
+;	.line	188; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (display) reg = reg + 4;
 	MOVF	r0x02, W
-	BZ	_00349_DS_
+	BZ	_00329_DS_
 	MOVLW	0x0c
 	MOVWF	r0x03
-_00349_DS_:
-;	.line	194; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (cursor) reg = reg + 2;
+_00329_DS_:
+;	.line	189; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (cursor) reg = reg + 2;
 	MOVF	r0x00, W
-	BZ	_00351_DS_
+	BZ	_00331_DS_
 	INCF	r0x03, F
 	INCF	r0x03, F
-_00351_DS_:
-;	.line	195; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (blink) reg = reg + 1;
+_00331_DS_:
+;	.line	190; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (blink) reg = reg + 1;
 	MOVF	r0x01, W
-	BZ	_00353_DS_
+	BZ	_00333_DS_
 	INCF	r0x03, F
-_00353_DS_:
-;	.line	196; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(reg);
+_00333_DS_:
+;	.line	191; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(reg);
 	MOVF	r0x03, W
 	MOVWF	POSTDEC1
 	CALL	__lcd_write_command
@@ -6524,18 +1366,18 @@ _00353_DS_:
 ; ; Starting pCode block
 S_main__lcd_clear_screen	code
 _lcd_clear_screen:
-;	.line	184; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(LCD_CLEAR_DISPLAY);
+;	.line	179; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(LCD_CLEAR_DISPLAY);
 	MOVLW	0x01
 	MOVWF	POSTDEC1
 	CALL	__lcd_write_command
 	MOVF	POSTINC1, F
-;	.line	185; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_1ms();
+;	.line	180; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_1ms();
 	MOVLW	0xa0
 	CALL	_delay100tcy
-;	.line	186; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_500us();
+;	.line	181; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_500us();
 	MOVLW	0x50
 	CALL	_delay100tcy
-;	.line	187; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_300us();
+;	.line	182; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_300us();
 	MOVLW	0x30
 	CALL	_delay100tcy
 	RETURN	
@@ -6543,29 +1385,29 @@ _lcd_clear_screen:
 ; ; Starting pCode block
 S_main__lcd_cursor_shift_right	code
 _lcd_cursor_shift_right:
-;	.line	176; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_cursor_shift_right(uint8_t nr) {
+;	.line	171; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_cursor_shift_right(uint8_t nr) {
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
 	MOVFF	r0x01, POSTDEC1
 	MOVLW	0x02
 	MOVFF	PLUSW2, r0x00
-;	.line	178; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (nr > 0) {
+;	.line	173; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (nr > 0) {
 	MOVF	r0x00, W
-	BZ	_00326_DS_
-;	.line	179; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < nr; i++) _lcd_write_command(LCD_CURSOR_SHIFT_R_VAL);
+	BZ	_00306_DS_
+;	.line	174; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < nr; i++) _lcd_write_command(LCD_CURSOR_SHIFT_R_VAL);
 	CLRF	r0x01
-_00324_DS_:
+_00304_DS_:
 	MOVF	r0x00, W
 	SUBWF	r0x01, W
-	BC	_00326_DS_
+	BC	_00306_DS_
 	MOVLW	0x14
 	MOVWF	POSTDEC1
 	CALL	__lcd_write_command
 	MOVF	POSTINC1, F
 	INCF	r0x01, F
-	BRA	_00324_DS_
-_00326_DS_:
+	BRA	_00304_DS_
+_00306_DS_:
 	MOVFF	PREINC1, r0x01
 	MOVFF	PREINC1, r0x00
 	MOVFF	PREINC1, FSR2L
@@ -6574,29 +1416,29 @@ _00326_DS_:
 ; ; Starting pCode block
 S_main__lcd_cursor_shift_left	code
 _lcd_cursor_shift_left:
-;	.line	169; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_cursor_shift_left(uint8_t nr) {
+;	.line	164; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_cursor_shift_left(uint8_t nr) {
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
 	MOVFF	r0x01, POSTDEC1
 	MOVLW	0x02
 	MOVFF	PLUSW2, r0x00
-;	.line	171; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (nr > 0) {
+;	.line	166; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (nr > 0) {
 	MOVF	r0x00, W
-	BZ	_00303_DS_
-;	.line	172; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < nr; i++) _lcd_write_command(LCD_CURSOR_SHIFT_L_VAL);
+	BZ	_00283_DS_
+;	.line	167; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < nr; i++) _lcd_write_command(LCD_CURSOR_SHIFT_L_VAL);
 	CLRF	r0x01
-_00301_DS_:
+_00281_DS_:
 	MOVF	r0x00, W
 	SUBWF	r0x01, W
-	BC	_00303_DS_
+	BC	_00283_DS_
 	MOVLW	0x10
 	MOVWF	POSTDEC1
 	CALL	__lcd_write_command
 	MOVF	POSTINC1, F
 	INCF	r0x01, F
-	BRA	_00301_DS_
-_00303_DS_:
+	BRA	_00281_DS_
+_00283_DS_:
 	MOVFF	PREINC1, r0x01
 	MOVFF	PREINC1, r0x00
 	MOVFF	PREINC1, FSR2L
@@ -6605,29 +1447,29 @@ _00303_DS_:
 ; ; Starting pCode block
 S_main__lcd_shift_right	code
 _lcd_shift_right:
-;	.line	162; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_shift_right(uint8_t nr) {
+;	.line	157; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_shift_right(uint8_t nr) {
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
 	MOVFF	r0x01, POSTDEC1
 	MOVLW	0x02
 	MOVFF	PLUSW2, r0x00
-;	.line	164; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (nr > 0) {
+;	.line	159; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (nr > 0) {
 	MOVF	r0x00, W
-	BZ	_00280_DS_
-;	.line	165; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < nr; i++) _lcd_write_command(LCD_DISPLAY_SHIFT_RIGHT);
+	BZ	_00260_DS_
+;	.line	160; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < nr; i++) _lcd_write_command(LCD_DISPLAY_SHIFT_RIGHT);
 	CLRF	r0x01
-_00278_DS_:
+_00258_DS_:
 	MOVF	r0x00, W
 	SUBWF	r0x01, W
-	BC	_00280_DS_
+	BC	_00260_DS_
 	MOVLW	0x1c
 	MOVWF	POSTDEC1
 	CALL	__lcd_write_command
 	MOVF	POSTINC1, F
 	INCF	r0x01, F
-	BRA	_00278_DS_
-_00280_DS_:
+	BRA	_00258_DS_
+_00260_DS_:
 	MOVFF	PREINC1, r0x01
 	MOVFF	PREINC1, r0x00
 	MOVFF	PREINC1, FSR2L
@@ -6636,29 +1478,29 @@ _00280_DS_:
 ; ; Starting pCode block
 S_main__lcd_shift_left	code
 _lcd_shift_left:
-;	.line	155; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_shift_left(uint8_t nr) {
+;	.line	150; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_shift_left(uint8_t nr) {
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
 	MOVFF	r0x01, POSTDEC1
 	MOVLW	0x02
 	MOVFF	PLUSW2, r0x00
-;	.line	157; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (nr > 0) {
+;	.line	152; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (nr > 0) {
 	MOVF	r0x00, W
-	BZ	_00257_DS_
-;	.line	158; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < nr; i++) _lcd_write_command(LCD_DISPLAY_SHIFT_LEFT);
+	BZ	_00237_DS_
+;	.line	153; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < nr; i++) _lcd_write_command(LCD_DISPLAY_SHIFT_LEFT);
 	CLRF	r0x01
-_00255_DS_:
+_00235_DS_:
 	MOVF	r0x00, W
 	SUBWF	r0x01, W
-	BC	_00257_DS_
+	BC	_00237_DS_
 	MOVLW	0x18
 	MOVWF	POSTDEC1
 	CALL	__lcd_write_command
 	MOVF	POSTINC1, F
 	INCF	r0x01, F
-	BRA	_00255_DS_
-_00257_DS_:
+	BRA	_00235_DS_
+_00237_DS_:
 	MOVFF	PREINC1, r0x01
 	MOVFF	PREINC1, r0x00
 	MOVFF	PREINC1, FSR2L
@@ -6667,7 +1509,7 @@ _00257_DS_:
 ; ; Starting pCode block
 S_main__lcd_cursor_position	code
 _lcd_cursor_position:
-;	.line	150; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_cursor_position(uint8_t line, uint8_t pos) {
+;	.line	145; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_cursor_position(uint8_t line, uint8_t pos) {
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
@@ -6676,7 +1518,7 @@ _lcd_cursor_position:
 	MOVFF	PLUSW2, r0x00
 	MOVLW	0x03
 	MOVFF	PLUSW2, r0x01
-;	.line	151; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_POS = pos + _lcd_line2index(line);
+;	.line	146; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_POS = pos + _lcd_line2index(line);
 	MOVF	r0x00, W
 	MOVWF	POSTDEC1
 	CALL	__lcd_line2index
@@ -6684,7 +1526,7 @@ _lcd_cursor_position:
 	ADDWF	r0x01, W
 	BANKSEL	_LCD_POS
 	MOVWF	_LCD_POS, B
-;	.line	152; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_restore_cursor();
+;	.line	147; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_restore_cursor();
 	CALL	__lcd_restore_cursor
 	MOVFF	PREINC1, r0x01
 	MOVFF	PREINC1, r0x00
@@ -6694,7 +1536,7 @@ _lcd_cursor_position:
 ; ; Starting pCode block
 S_main__lcd_write_strF	code
 _lcd_write_strF:
-;	.line	143; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_write_strF(const uint8_t *data){
+;	.line	138; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_write_strF(const uint8_t *data){
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
@@ -6707,28 +1549,28 @@ _lcd_write_strF:
 	MOVFF	PLUSW2, r0x01
 	MOVLW	0x04
 	MOVFF	PLUSW2, r0x02
-_00229_DS_:
-;	.line	144; ../my_sdcc_lib/rosso_sdcc_lcd4.h	while(*data){
+_00209_DS_:
+;	.line	139; ../my_sdcc_lib/rosso_sdcc_lcd4.h	while(*data){
 	MOVFF	r0x00, FSR0L
 	MOVFF	r0x01, PRODL
 	MOVF	r0x02, W
 	CALL	__gptrget1
 	MOVWF	r0x03
 	MOVF	r0x03, W
-	BZ	_00232_DS_
-;	.line	145; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_data(*data);
+	BZ	_00212_DS_
+;	.line	140; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_data(*data);
 	MOVF	r0x03, W
 	MOVWF	POSTDEC1
 	CALL	__lcd_write_data
 	MOVF	POSTINC1, F
-;	.line	146; ../my_sdcc_lib/rosso_sdcc_lcd4.h	*data++;
+;	.line	141; ../my_sdcc_lib/rosso_sdcc_lcd4.h	*data++;
 	INCF	r0x00, F
-	BNC	_00229_DS_
+	BNC	_00209_DS_
 	INFSNZ	r0x01, F
 	INCF	r0x02, F
-_00241_DS_:
-	BRA	_00229_DS_
-_00232_DS_:
+_00221_DS_:
+	BRA	_00209_DS_
+_00212_DS_:
 	MOVFF	PREINC1, r0x03
 	MOVFF	PREINC1, r0x02
 	MOVFF	PREINC1, r0x01
@@ -6739,7 +1581,7 @@ _00232_DS_:
 ; ; Starting pCode block
 S_main__lcd_write_str	code
 _lcd_write_str:
-;	.line	136; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_write_str(uint8_t *data){
+;	.line	131; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_write_str(uint8_t *data){
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
@@ -6752,28 +1594,28 @@ _lcd_write_str:
 	MOVFF	PLUSW2, r0x01
 	MOVLW	0x04
 	MOVFF	PLUSW2, r0x02
-_00212_DS_:
-;	.line	137; ../my_sdcc_lib/rosso_sdcc_lcd4.h	while(*data){
+_00192_DS_:
+;	.line	132; ../my_sdcc_lib/rosso_sdcc_lcd4.h	while(*data){
 	MOVFF	r0x00, FSR0L
 	MOVFF	r0x01, PRODL
 	MOVF	r0x02, W
 	CALL	__gptrget1
 	MOVWF	r0x03
 	MOVF	r0x03, W
-	BZ	_00215_DS_
-;	.line	138; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_data(*data);
+	BZ	_00195_DS_
+;	.line	133; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_data(*data);
 	MOVF	r0x03, W
 	MOVWF	POSTDEC1
 	CALL	__lcd_write_data
 	MOVF	POSTINC1, F
-;	.line	139; ../my_sdcc_lib/rosso_sdcc_lcd4.h	*data++;
+;	.line	134; ../my_sdcc_lib/rosso_sdcc_lcd4.h	*data++;
 	INCF	r0x00, F
-	BNC	_00212_DS_
+	BNC	_00192_DS_
 	INFSNZ	r0x01, F
 	INCF	r0x02, F
-_00224_DS_:
-	BRA	_00212_DS_
-_00215_DS_:
+_00204_DS_:
+	BRA	_00192_DS_
+_00195_DS_:
 	MOVFF	PREINC1, r0x03
 	MOVFF	PREINC1, r0x02
 	MOVFF	PREINC1, r0x01
@@ -6784,13 +1626,13 @@ _00215_DS_:
 ; ; Starting pCode block
 S_main__lcd_write_char	code
 _lcd_write_char:
-;	.line	132; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_write_char(uint8_t data) {
+;	.line	127; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_write_char(uint8_t data) {
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
 	MOVLW	0x02
 	MOVFF	PLUSW2, r0x00
-;	.line	133; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_data(data);
+;	.line	128; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_data(data);
 	MOVF	r0x00, W
 	MOVWF	POSTDEC1
 	CALL	__lcd_write_data
@@ -6802,7 +1644,7 @@ _lcd_write_char:
 ; ; Starting pCode block
 S_main___lcd_restore_cursor	code
 __lcd_restore_cursor:
-;	.line	129; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(LCD_SET_DDRAM_ADDRESS | LCD_POS);
+;	.line	124; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(LCD_SET_DDRAM_ADDRESS | LCD_POS);
 	MOVLW	0x80
 	BANKSEL	_LCD_POS
 	IORWF	_LCD_POS, W, B
@@ -6816,45 +1658,45 @@ __lcd_restore_cursor:
 ; ; Starting pCode block
 S_main___lcd_line2index	code
 __lcd_line2index:
-;	.line	117; ../my_sdcc_lib/rosso_sdcc_lcd4.h	uint8_t _lcd_line2index(uint8_t line) {
+;	.line	112; ../my_sdcc_lib/rosso_sdcc_lcd4.h	uint8_t _lcd_line2index(uint8_t line) {
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
 	MOVLW	0x02
 	MOVFF	PLUSW2, r0x00
-;	.line	119; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (line < LCD_NR_LINES) {
+;	.line	114; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (line < LCD_NR_LINES) {
 	SUBWF	r0x00, W
-	BC	_00173_DS_
-;	.line	120; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (line == 0) return 0x00;
+	BC	_00153_DS_
+;	.line	115; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (line == 0) return 0x00;
 	MOVF	r0x00, W
-	BNZ	_00170_DS_
+	BNZ	_00150_DS_
 	CLRF	WREG
-	BRA	_00174_DS_
-_00170_DS_:
-;	.line	121; ../my_sdcc_lib/rosso_sdcc_lcd4.h	else if (line == 1) return 0x40;
+	BRA	_00154_DS_
+_00150_DS_:
+;	.line	116; ../my_sdcc_lib/rosso_sdcc_lcd4.h	else if (line == 1) return 0x40;
 	MOVF	r0x00, W
 	XORLW	0x01
-	BNZ	_00167_DS_
+	BNZ	_00147_DS_
 	MOVLW	0x40
-	BRA	_00174_DS_
-_00167_DS_:
-;	.line	122; ../my_sdcc_lib/rosso_sdcc_lcd4.h	else if (line == 2) return 0x00 + LCD_NR_CHARS;
+	BRA	_00154_DS_
+_00147_DS_:
+;	.line	117; ../my_sdcc_lib/rosso_sdcc_lcd4.h	else if (line == 2) return 0x00 + LCD_NR_CHARS;
 	MOVF	r0x00, W
 	XORLW	0x02
-	BNZ	_00164_DS_
+	BNZ	_00144_DS_
 	MOVLW	0x10
-	BRA	_00174_DS_
-_00164_DS_:
-;	.line	123; ../my_sdcc_lib/rosso_sdcc_lcd4.h	else if (line == 3) return 0x40 + LCD_NR_CHARS;
+	BRA	_00154_DS_
+_00144_DS_:
+;	.line	118; ../my_sdcc_lib/rosso_sdcc_lcd4.h	else if (line == 3) return 0x40 + LCD_NR_CHARS;
 	MOVF	r0x00, W
 	XORLW	0x03
-	BNZ	_00173_DS_
+	BNZ	_00153_DS_
 	MOVLW	0x50
-	BRA	_00174_DS_
-_00173_DS_:
-;	.line	125; ../my_sdcc_lib/rosso_sdcc_lcd4.h	return 0x00;
+	BRA	_00154_DS_
+_00153_DS_:
+;	.line	120; ../my_sdcc_lib/rosso_sdcc_lcd4.h	return 0x00;
 	CLRF	WREG
-_00174_DS_:
+_00154_DS_:
 	MOVFF	PREINC1, r0x00
 	MOVFF	PREINC1, FSR2L
 	RETURN	
@@ -6862,15 +1704,15 @@ _00174_DS_:
 ; ; Starting pCode block
 S_main___lcd_write_command	code
 __lcd_write_command:
-;	.line	112; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void _lcd_write_command(uint8_t value) {
+;	.line	107; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void _lcd_write_command(uint8_t value) {
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
 	MOVLW	0x02
 	MOVFF	PLUSW2, r0x00
-;	.line	113; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_RS = 0; // select command mode
+;	.line	108; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_RS = 0; // select command mode
 	BCF	_LATEbits, 1
-;	.line	114; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write(value); // write byte
+;	.line	109; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write(value); // write byte
 	MOVF	r0x00, W
 	MOVWF	POSTDEC1
 	CALL	___lcd_write
@@ -6882,15 +1724,15 @@ __lcd_write_command:
 ; ; Starting pCode block
 S_main___lcd_write_data	code
 __lcd_write_data:
-;	.line	107; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void _lcd_write_data(uint8_t value) {
+;	.line	102; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void _lcd_write_data(uint8_t value) {
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
 	MOVLW	0x02
 	MOVFF	PLUSW2, r0x00
-;	.line	108; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_RS = 1; // select data mode
+;	.line	103; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_RS = 1; // select data mode
 	BSF	_LATEbits, 1
-;	.line	109; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write(value); // write byte
+;	.line	104; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write(value); // write byte
 	MOVF	r0x00, W
 	MOVWF	POSTDEC1
 	CALL	___lcd_write
@@ -6902,14 +1744,14 @@ __lcd_write_data:
 ; ; Starting pCode block
 S_main____lcd_write	code
 ___lcd_write:
-;	.line	100; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void __lcd_write(uint8_t value) {
+;	.line	95; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void __lcd_write(uint8_t value) {
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
 	MOVFF	r0x01, POSTDEC1
 	MOVLW	0x02
 	MOVFF	PLUSW2, r0x00
-;	.line	101; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(value >> 4); // write high nibble
+;	.line	96; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(value >> 4); // write high nibble
 	SWAPF	r0x00, W
 	ANDLW	0x0f
 ; #	MOVWF	r0x01
@@ -6918,12 +1760,12 @@ ___lcd_write:
 	MOVWF	POSTDEC1
 	CALL	___lcd_write_nibble
 	MOVF	POSTINC1, F
-;	.line	102; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(value); // write low nibble
+;	.line	97; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(value); // write low nibble
 	MOVF	r0x00, W
 	MOVWF	POSTDEC1
 	CALL	___lcd_write_nibble
 	MOVF	POSTINC1, F
-;	.line	103; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_35us(); // > 37 us
+;	.line	98; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_35us(); // > 37 us
 	MOVLW	0x38
 	CALL	_delay10tcy
 	nop	
@@ -6982,17 +1824,17 @@ ___lcd_write:
 ; ; Starting pCode block
 S_main____lcd_write_nibble	code
 ___lcd_write_nibble:
-;	.line	88; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void __lcd_write_nibble(uint8_t value) {
+;	.line	83; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void __lcd_write_nibble(uint8_t value) {
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
 	MOVLW	0x02
 	MOVFF	PLUSW2, r0x00
-;	.line	90; ../my_sdcc_lib/rosso_sdcc_lcd4.h	nibble.val = value;
+;	.line	85; ../my_sdcc_lib/rosso_sdcc_lcd4.h	nibble.val = value;
 	MOVF	r0x00, W
 	BANKSEL	___lcd_write_nibble_nibble_1_14
 	MOVWF	___lcd_write_nibble_nibble_1_14, B
-;	.line	91; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D4 = nibble.bits.b0;
+;	.line	86; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D4 = nibble.bits.b0;
 	CLRF	r0x00
 ; removed redundant BANKSEL
 	BTFSC	___lcd_write_nibble_nibble_1_14, 0, B
@@ -7005,7 +1847,7 @@ ___lcd_write_nibble:
 	ANDLW	0xef
 	IORWF	PRODH, W
 	MOVWF	_LATBbits
-;	.line	92; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D5 = nibble.bits.b1;
+;	.line	87; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D5 = nibble.bits.b1;
 	CLRF	r0x00
 ; removed redundant BANKSEL
 	BTFSC	___lcd_write_nibble_nibble_1_14, 1, B
@@ -7019,7 +1861,7 @@ ___lcd_write_nibble:
 	ANDLW	0xdf
 	IORWF	PRODH, W
 	MOVWF	_LATBbits
-;	.line	93; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D6 = nibble.bits.b2;
+;	.line	88; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D6 = nibble.bits.b2;
 	CLRF	r0x00
 ; removed redundant BANKSEL
 	BTFSC	___lcd_write_nibble_nibble_1_14, 2, B
@@ -7033,7 +1875,7 @@ ___lcd_write_nibble:
 	ANDLW	0xbf
 	IORWF	PRODH, W
 	MOVWF	_LATBbits
-;	.line	94; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D7 = nibble.bits.b3;
+;	.line	89; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D7 = nibble.bits.b3;
 	CLRF	r0x00
 ; removed redundant BANKSEL
 	BTFSC	___lcd_write_nibble_nibble_1_14, 3, B
@@ -7046,7 +1888,7 @@ ___lcd_write_nibble:
 	ANDLW	0x7f
 	IORWF	PRODH, W
 	MOVWF	_LATBbits
-;	.line	95; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_EN = 1;
+;	.line	90; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_EN = 1;
 	BSF	_LATEbits, 2
 	nop	
 	nop	
@@ -7056,7 +1898,7 @@ ___lcd_write_nibble:
 	nop	
 	nop	
 	nop	
-;	.line	97; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_EN = 0;
+;	.line	92; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_EN = 0;
 	BCF	_LATEbits, 2
 	MOVFF	PREINC1, r0x00
 	MOVFF	PREINC1, FSR2L
@@ -7065,7 +1907,7 @@ ___lcd_write_nibble:
 ; ; Starting pCode block
 S_main___delay_ms	code
 __delay_ms:
-;	.line	174; ../my_sdcc_lib/rosso_sdcc.h	void _delay_ms(uint16_t x){
+;	.line	175; ../my_sdcc_lib/rosso_sdcc.h	void _delay_ms(uint16_t x){
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
@@ -7076,25 +1918,22 @@ __delay_ms:
 	MOVFF	PLUSW2, r0x00
 	MOVLW	0x03
 	MOVFF	PLUSW2, r0x01
-;	.line	176; ../my_sdcc_lib/rosso_sdcc.h	for(i=0; i<x; i++){
-	CLRF	r0x02
-	CLRF	r0x03
-_00125_DS_:
-	MOVF	r0x01, W
-	SUBWF	r0x03, W
-	BNZ	_00136_DS_
-	MOVF	r0x00, W
-	SUBWF	r0x02, W
-_00136_DS_:
-	BC	_00127_DS_
+_00113_DS_:
 ;	.line	177; ../my_sdcc_lib/rosso_sdcc.h	delay_1ms();
 	MOVLW	0xa0
 	CALL	_delay100tcy
-;	.line	176; ../my_sdcc_lib/rosso_sdcc.h	for(i=0; i<x; i++){
-	INFSNZ	r0x02, F
-	INCF	r0x03, F
-	BRA	_00125_DS_
-_00127_DS_:
+;	.line	178; ../my_sdcc_lib/rosso_sdcc.h	}while(--x);
+	MOVF	r0x00, W
+	ADDLW	0xff
+	MOVWF	r0x02
+	MOVLW	0xff
+	ADDWFC	r0x01, W
+	MOVWF	r0x03
+	MOVFF	r0x02, r0x00
+	MOVFF	r0x03, r0x01
+	MOVF	r0x02, W
+	IORWF	r0x03, W
+	BNZ	_00113_DS_
 	MOVFF	PREINC1, r0x03
 	MOVFF	PREINC1, r0x02
 	MOVFF	PREINC1, r0x01
@@ -7105,7 +1944,7 @@ _00127_DS_:
 ; ; Starting pCode block
 S_main___delay_us	code
 __delay_us:
-;	.line	167; ../my_sdcc_lib/rosso_sdcc.h	void _delay_us(uint16_t x){
+;	.line	169; ../my_sdcc_lib/rosso_sdcc.h	void _delay_us(uint16_t x){
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
@@ -7116,38 +1955,35 @@ __delay_us:
 	MOVFF	PLUSW2, r0x00
 	MOVLW	0x03
 	MOVFF	PLUSW2, r0x01
-;	.line	169; ../my_sdcc_lib/rosso_sdcc.h	for(i=0; i<x; i++){
-	CLRF	r0x02
-	CLRF	r0x03
-_00107_DS_:
-	MOVF	r0x01, W
-	SUBWF	r0x03, W
-	BNZ	_00118_DS_
+_00105_DS_:
+	nop	
+	nop	
+	nop	
+	nop	
+	nop	
+	nop	
+	nop	
+	nop	
+	nop	
+	nop	
+	nop	
+	nop	
+	nop	
+	nop	
+	nop	
+	nop	
+;	.line	172; ../my_sdcc_lib/rosso_sdcc.h	}while(--x);
 	MOVF	r0x00, W
-	SUBWF	r0x02, W
-_00118_DS_:
-	BC	_00109_DS_
-	nop	
-	nop	
-	nop	
-	nop	
-	nop	
-	nop	
-	nop	
-	nop	
-	nop	
-	nop	
-	nop	
-	nop	
-	nop	
-	nop	
-	nop	
-	nop	
-;	.line	169; ../my_sdcc_lib/rosso_sdcc.h	for(i=0; i<x; i++){
-	INFSNZ	r0x02, F
-	INCF	r0x03, F
-	BRA	_00107_DS_
-_00109_DS_:
+	ADDLW	0xff
+	MOVWF	r0x02
+	MOVLW	0xff
+	ADDWFC	r0x01, W
+	MOVWF	r0x03
+	MOVFF	r0x02, r0x00
+	MOVFF	r0x03, r0x01
+	MOVF	r0x02, W
+	IORWF	r0x03, W
+	BNZ	_00105_DS_
 	MOVFF	PREINC1, r0x03
 	MOVFF	PREINC1, r0x02
 	MOVFF	PREINC1, r0x01
@@ -7160,15 +1996,21 @@ _00109_DS_:
 _sf:
 	DB	0x20, 0x45, 0x4e, 0x47, 0x00, 0x00
 ; ; Starting pCode block
-__str_0:
+___str_0:
+	DB	0x20, 0x20, 0x00
+; ; Starting pCode block
+___str_1:
+	DB	0x20, 0x00
+; ; Starting pCode block
+__str_2:
 	DB	0x20, 0x45, 0x4e, 0x47, 0x00, 0x00
 
 
 ; Statistics:
-; code size:	14648 (0x3938) bytes (11.18%)
-;           	 7324 (0x1c9c) words
+; code size:	 2954 (0x0b8a) bytes ( 2.25%)
+;           	 1477 (0x05c5) words
 ; udata size:	    6 (0x0006) bytes ( 0.16%)
-; access size:	   11 (0x000b) bytes
+; access size:	    5 (0x0005) bytes
 
 
 	end

@@ -29,8 +29,8 @@ long_line_column=80
 
 [files]
 current_page=0
-FILE_NAME_0=732;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Flcd_helloworld%2Fmain.c;0;4
-FILE_NAME_1=0;ASM;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Flcd_helloworld%2Fmain.asm;0;4
+FILE_NAME_0=1610;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Flcd_helloworld%2Fmain.c;0;4
+FILE_NAME_1=41257;ASM;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Flcd_helloworld%2Fmain.asm;0;4
 
 [VTE]
 last_dir=/home/xuser/work/geany/projects/lcd_helloworld

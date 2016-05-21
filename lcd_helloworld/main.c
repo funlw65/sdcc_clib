@@ -18,7 +18,8 @@
 #undef NOBOOT
 #include <rosso_sdcc.h> /* processor type, speed, configuration bits, hardware, app_offset. */
 #include <rosso_sdcc_lcd4.h>
-#include <rosso_sdcc_conversion.h>
+//#include <rosso_sdcc_conversion.h>
+#include <stdlib.h>
 #include <crt0i.c> /* don't ever remove this! let it be the last, under other includes */
 
 uint8_t s[4]; /* buffer for number conversion */
@@ -26,41 +27,7 @@ uint8_t s[4]; /* buffer for number conversion */
 const uint8_t sf[]=" ENG\0"; /* this should be stored in FLASH */
 uint8_t sr[]="Hello World!\0";
 
-/* ------ Relocating Interrupts - Don't touch! --------------------- */
-//#ifdef NOBOOT
-//#pragma code high_isr_proxy 0x008
-//void high_isr_proxy(void) __naked __interrupt 1 {
-//	__asm goto _high_isr __endasm;
-//}
-
-//#pragma code low_isr_proxy 0x018
-//void low_isr_proxy(void) __naked __interrupt 2 {
-//	__asm goto _low_isr __endasm;
-//}
-//#else
-//#pragma code high_isr_proxy 0x308
-//void high_isr_proxy(void) __naked __interrupt 1 {
-//	__asm goto _high_isr __endasm;
-//}
-
-//#pragma code low_isr_proxy 0x318
-//void low_isr_proxy(void) __naked __interrupt 2 {
-//	__asm goto _low_isr __endasm;
-//}
-//#endif
-/* ----------------------------------------------------------------- */
- 
-//void high_isr(void) __shadowregs  __interrupt {
-//    /* add here any high priority interrupt management functions */
-//}
-
-//void low_isr(void) __shadowregs  __interrupt {
-//    /* add here any low priority interrupt management functions */
-//}
-
-
 void main() {
-    uint8_t i = 0;
     uint8_t counter = 0;
     AllDigital(); /* all pins digital */
 #ifdef ONBOARD
@@ -68,27 +35,23 @@ void main() {
     OnBoardButton_dir = 1; /* input */
     OnBoardLED = 0;
 #endif
-    /* sei(); */ /* enable general interrupts if needed */
-    /* Add other initializations you may have... */
     lcd_init(LCD_HD44780);
-    /* signal the start four times */
-    for (i = 0; i < 4; i++) {
-        OnBoardLED = 1;
-        delay_100ms();
-        delay_100ms();
-        OnBoardLED = 0;
-        delay_100ms();
-        delay_100ms();
-    }
     lcd_cursor_position(0, 0);
     lcd_write_str(sr);  /* reading the string from the RAM */
     lcd_write_strF(sf); /* reading the string from the FLASH */
     while (1) {
-        /* Add your repeating code... */
         counter += 1; /* count up to 255 and start again from zer0 */
         lcd_cursor_position(1, 0);
-        byte2dec(counter, s);
-        for (i = 0; i < 3; i++) _lcd_write_data(s[i]);
+        uitoa(counter, s, 10);
+        /* formating - aligning the number to right */
+		if(counter < 10) { 
+			lcd_write_str("  ");
+		}
+		if((counter > 9) && (counter < 100)) { 
+			lcd_write_str(" ");
+		}
+		/* end formating */
+        lcd_write_str(s);
         delay_150ms();
         delay_150ms();
     }
