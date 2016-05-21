@@ -8,6 +8,7 @@
 #undef NOBOOT
 #include <rosso_sdcc.h>
 #include <rosso_sdcc_conversion.h>
+#include <stdlib.h>
 #include <rosso_sdcc_i2c_master.h>
 #define PCF8583_USE_I2C
 #define PCF8583_PHYSICAL_ADDRESS 0xA2 // 0x00 may be used by I2C EEPROM
@@ -57,38 +58,31 @@ void main(void){
             old_sec = current_sec;
             // show time
             lcd_cursor_position(0, 0);
-            byte2dec(RTC_hours, s);
-            if(s[1] == ' ') _lcd_write_data('0');
-            else _lcd_write_data(s[1]);
-            _lcd_write_data(s[2]);
+            uitoa(RTC_hours, s, 10);
+            if(RTC_hours < 10) _lcd_write_data('0');
+            lcd_write_str(s);
             _lcd_write_data(':');
-            byte2dec(RTC_minutes, s);
-            if(s[1] == ' ') _lcd_write_data('0');
-            else _lcd_write_data(s[1]);
-            _lcd_write_data(s[2]);
+            uitoa(RTC_minutes, s, 10);
+            if(RTC_minutes < 10) _lcd_write_data('0');
+            lcd_write_str(s);
             _lcd_write_data(':');
-            byte2dec(RTC_seconds, s);
-            if(s[1] == ' ') _lcd_write_data('0');
-            else _lcd_write_data(s[1]);
-            _lcd_write_data(s[2]);
+            uitoa(RTC_seconds, s, 10);
+            if(RTC_seconds < 10) _lcd_write_data('0');
+            lcd_write_str(s);
             // show date on the second line
             lcd_cursor_position(1, 0);
-            byte2dec(RTC_day, s);
-            if(s[1] == ' ') _lcd_write_data('0');
-            else _lcd_write_data(s[1]);
-            _lcd_write_data(s[2]);
+            uitoa(RTC_day, s, 10);
+            if(RTC_day < 10) _lcd_write_data('0');
+            lcd_write_str(s);
             _lcd_write_data('/');
-            byte2dec(RTC_month, s);
-            if(s[1] == ' ') _lcd_write_data('0');
-            else _lcd_write_data(s[1]);
-            _lcd_write_data(s[2]);
+            uitoa(RTC_month, s, 10);
+            if(RTC_month < 10) _lcd_write_data('0');
+            lcd_write_str(s);
             _lcd_write_data('/');
-            byte2dec(RTC_century, s);
-            _lcd_write_data(s[1]);
-            _lcd_write_data(s[2]);
-            byte2dec(RTC_year, s);
-            _lcd_write_data(s[1]);
-            _lcd_write_data(s[2]);
+            uitoa(RTC_century, s, 10);
+            lcd_write_str(s);
+            uitoa(RTC_year, s, 10);
+            lcd_write_str(s);
         }
         delay_150ms();
         delay_150ms();
