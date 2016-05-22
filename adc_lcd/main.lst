@@ -1,0 +1,2746 @@
+gplink-1.4.3 #1207 (May 12 2016)
+Copyright (c) 1998-2016 gputils project
+Listing File Generated: 5-22-2016  07:43:57
+ 
+ 
+Address  Value    Disassembly              Source
+-------  -----    -----------              ------
+                                           ;--------------------------------------------------------
+                                           ; File Created by SDCC : free open source ANSI-C Compiler
+                                           ; Version 3.5.6 #9604 (Linux)
+                                           ;--------------------------------------------------------
+                                           ; PIC16 port for the Microchip 16-bit core micros
+                                           ;--------------------------------------------------------
+                                           	list	p=18f46k22
+                                           	radix	dec
+
+
+                                           ;--------------------------------------------------------
+                                           ; public variables in this module
+                                           ;--------------------------------------------------------
+                                           	global	___uflags
+                                           	global	__entry
+                                           	global	__startup
+                                           	global	_main
+                                           	global	_LCD_POS
+                                           	global	_s
+                                           	global	_config
+                                           	global	_config2
+                                           	global	_config3
+                                           	global	__delay_us
+                                           	global	__delay_ms
+                                           	global	___lcd_write_nibble
+                                           	global	___lcd_write
+                                           	global	__lcd_write_data
+                                           	global	__lcd_write_command
+                                           	global	__lcd_line2index
+                                           	global	__lcd_restore_cursor
+                                           	global	_lcd_write_char
+                                           	global	_lcd_write_str
+                                           	global	_lcd_write_strF
+                                           	global	_lcd_cursor_position
+                                           	global	_lcd_shift_left
+                                           	global	_lcd_shift_right
+                                           	global	_lcd_cursor_shift_left
+                                           	global	_lcd_cursor_shift_right
+                                           	global	_lcd_clear_screen
+                                           	global	_lcd_cursor_blink_display
+                                           	global	_lcd_home
+                                           	global	_lcd_clear_line
+                                           	global	_lcd_progress
+                                           	global	_lcd_init
+                                           	global	_adc_init
+                                           	global	_adc_setch
+                                           	global	_adc_conv
+                                           	global	_adc_busy
+                                           	global	_adc_setchconv
+                                           	global	_adc_read
+                                           	global	_adc_close
+                                           	global	_sf
+
+                                           ;--------------------------------------------------------
+                                           ; extern variables in this module
+                                           ;--------------------------------------------------------
+                                           	extern	__gptrget1
+                                           	extern	_ANSELAbits
+                                           	extern	_ANSELBbits
+                                           	extern	_ANSELCbits
+                                           	extern	_ANSELDbits
+                                           	extern	_ANSELEbits
+                                           	extern	_PMD2bits
+                                           	extern	_PMD1bits
+                                           	extern	_PMD0bits
+                                           	extern	_DACCON1bits
+                                           	extern	_VREFCON2bits
+                                           	extern	_DACCON0bits
+                                           	extern	_VREFCON1bits
+                                           	extern	_FVRCONbits
+                                           	extern	_VREFCON0bits
+                                           	extern	_CTMUICONbits
+                                           	extern	_CTMUICONHbits
+                                           	extern	_CTMUCON1bits
+                                           	extern	_CTMUCONLbits
+                                           	extern	_CTMUCON0bits
+                                           	extern	_CTMUCONHbits
+                                           	extern	_SRCON1bits
+                                           	extern	_SRCON0bits
+                                           	extern	_CCPTMRS1bits
+                                           	extern	_CCPTMRS0bits
+                                           	extern	_T6CONbits
+                                           	extern	_T5GCONbits
+                                           	extern	_T5CONbits
+                                           	extern	_T4CONbits
+                                           	extern	_CCP5CONbits
+                                           	extern	_CCP4CONbits
+                                           	extern	_PSTR3CONbits
+                                           	extern	_CCP3ASbits
+                                           	extern	_ECCP3ASbits
+                                           	extern	_PWM3CONbits
+                                           	extern	_CCP3CONbits
+                                           	extern	_SLRCONbits
+                                           	extern	_WPUBbits
+                                           	extern	_IOCBbits
+                                           	extern	_PSTR2CONbits
+                                           	extern	_CCP2ASbits
+                                           	extern	_ECCP2ASbits
+                                           	extern	_PWM2CONbits
+                                           	extern	_CCP2CONbits
+                                           	extern	_SSP2CON3bits
+                                           	extern	_SSP2MSKbits
+                                           	extern	_SSP2CON2bits
+                                           	extern	_SSP2CON1bits
+                                           	extern	_SSP2STATbits
+                                           	extern	_BAUD2CONbits
+                                           	extern	_BAUDCON2bits
+                                           	extern	_RC2STAbits
+                                           	extern	_RCSTA2bits
+                                           	extern	_TX2STAbits
+                                           	extern	_TXSTA2bits
+                                           	extern	_CM12CONbits
+                                           	extern	_CM2CON1bits
+                                           	extern	_CM2CONbits
+                                           	extern	_CM2CON0bits
+                                           	extern	_CM1CONbits
+                                           	extern	_CM1CON0bits
+                                           	extern	_PIE4bits
+                                           	extern	_PIR4bits
+                                           	extern	_IPR4bits
+                                           	extern	_PIE5bits
+                                           	extern	_PIR5bits
+                                           	extern	_IPR5bits
+                                           	extern	_PORTAbits
+                                           	extern	_PORTBbits
+                                           	extern	_PORTCbits
+                                           	extern	_PORTDbits
+                                           	extern	_PORTEbits
+                                           	extern	_LATAbits
+                                           	extern	_LATBbits
+                                           	extern	_LATCbits
+                                           	extern	_LATDbits
+                                           	extern	_LATEbits
+                                           	extern	_DDRAbits
+                                           	extern	_TRISAbits
+                                           	extern	_DDRBbits
+                                           	extern	_TRISBbits
+                                           	extern	_DDRCbits
+                                           	extern	_TRISCbits
+                                           	extern	_DDRDbits
+                                           	extern	_TRISDbits
+                                           	extern	_DDREbits
+                                           	extern	_TRISEbits
+                                           	extern	_OSCTUNEbits
+                                           	extern	_HLVDCONbits
+                                           	extern	_LVDCONbits
+                                           	extern	_PIE1bits
+                                           	extern	_PIR1bits
+                                           	extern	_IPR1bits
+                                           	extern	_PIE2bits
+                                           	extern	_PIR2bits
+                                           	extern	_IPR2bits
+                                           	extern	_PIE3bits
+                                           	extern	_PIR3bits
+                                           	extern	_IPR3bits
+                                           	extern	_EECON1bits
+                                           	extern	_EEADRbits
+                                           	extern	_EEADRHbits
+                                           	extern	_RC1STAbits
+                                           	extern	_RCSTAbits
+                                           	extern	_RCSTA1bits
+                                           	extern	_TX1STAbits
+                                           	extern	_TXSTAbits
+                                           	extern	_TXSTA1bits
+                                           	extern	_T3CONbits
+                                           	extern	_T3GCONbits
+                                           	extern	_ECCP1ASbits
+                                           	extern	_ECCPASbits
+                                           	extern	_PWM1CONbits
+                                           	extern	_PWMCONbits
+                                           	extern	_BAUD1CONbits
+                                           	extern	_BAUDCONbits
+                                           	extern	_BAUDCON1bits
+                                           	extern	_BAUDCTLbits
+                                           	extern	_PSTR1CONbits
+                                           	extern	_PSTRCONbits
+                                           	extern	_T2CONbits
+                                           	extern	_CCP1CONbits
+                                           	extern	_ADCON2bits
+                                           	extern	_ADCON1bits
+                                           	extern	_ADCON0bits
+                                           	extern	_SSP1CON2bits
+                                           	extern	_SSPCON2bits
+                                           	extern	_SSP1CON1bits
+                                           	extern	_SSPCON1bits
+                                           	extern	_SSP1STATbits
+                                           	extern	_SSPSTATbits
+                                           	extern	_SSP1MSKbits
+                                           	extern	_SSPMSKbits
+                                           	extern	_SSP1CON3bits
+                                           	extern	_SSPCON3bits
+                                           	extern	_T1GCONbits
+                                           	extern	_T1CONbits
+                                           	extern	_RCONbits
+                                           	extern	_WDTCONbits
+                                           	extern	_OSCCON2bits
+                                           	extern	_OSCCONbits
+                                           	extern	_T0CONbits
+                                           	extern	_STATUSbits
+                                           	extern	_INTCON3bits
+                                           	extern	_INTCON2bits
+                                           	extern	_INTCONbits
+                                           	extern	_STKPTRbits
+                                           	extern	_stack_end
+                                           	extern	_ANSELA
+                                           	extern	_ANSELB
+                                           	extern	_ANSELC
+                                           	extern	_ANSELD
+                                           	extern	_ANSELE
+                                           	extern	_PMD2
+                                           	extern	_PMD1
+                                           	extern	_PMD0
+                                           	extern	_DACCON1
+                                           	extern	_VREFCON2
+                                           	extern	_DACCON0
+                                           	extern	_VREFCON1
+                                           	extern	_FVRCON
+                                           	extern	_VREFCON0
+                                           	extern	_CTMUICON
+                                           	extern	_CTMUICONH
+                                           	extern	_CTMUCON1
+                                           	extern	_CTMUCONL
+                                           	extern	_CTMUCON0
+                                           	extern	_CTMUCONH
+                                           	extern	_SRCON1
+                                           	extern	_SRCON0
+                                           	extern	_CCPTMRS1
+                                           	extern	_CCPTMRS0
+                                           	extern	_T6CON
+                                           	extern	_PR6
+                                           	extern	_TMR6
+                                           	extern	_T5GCON
+                                           	extern	_T5CON
+                                           	extern	_TMR5
+                                           	extern	_TMR5L
+                                           	extern	_TMR5H
+                                           	extern	_T4CON
+                                           	extern	_PR4
+                                           	extern	_TMR4
+                                           	extern	_CCP5CON
+                                           	extern	_CCPR5
+                                           	extern	_CCPR5L
+                                           	extern	_CCPR5H
+                                           	extern	_CCP4CON
+                                           	extern	_CCPR4
+                                           	extern	_CCPR4L
+                                           	extern	_CCPR4H
+                                           	extern	_PSTR3CON
+                                           	extern	_CCP3AS
+                                           	extern	_ECCP3AS
+                                           	extern	_PWM3CON
+                                           	extern	_CCP3CON
+                                           	extern	_CCPR3
+                                           	extern	_CCPR3L
+                                           	extern	_CCPR3H
+                                           	extern	_SLRCON
+                                           	extern	_WPUB
+                                           	extern	_IOCB
+                                           	extern	_PSTR2CON
+                                           	extern	_CCP2AS
+                                           	extern	_ECCP2AS
+                                           	extern	_PWM2CON
+                                           	extern	_CCP2CON
+                                           	extern	_CCPR2
+                                           	extern	_CCPR2L
+                                           	extern	_CCPR2H
+                                           	extern	_SSP2CON3
+                                           	extern	_SSP2MSK
+                                           	extern	_SSP2CON2
+                                           	extern	_SSP2CON1
+                                           	extern	_SSP2STAT
+                                           	extern	_SSP2ADD
+                                           	extern	_SSP2BUF
+                                           	extern	_BAUD2CON
+                                           	extern	_BAUDCON2
+                                           	extern	_RC2STA
+                                           	extern	_RCSTA2
+                                           	extern	_TX2STA
+                                           	extern	_TXSTA2
+                                           	extern	_TX2REG
+                                           	extern	_TXREG2
+                                           	extern	_RC2REG
+                                           	extern	_RCREG2
+                                           	extern	_SP2BRG
+                                           	extern	_SPBRG2
+                                           	extern	_SP2BRGH
+                                           	extern	_SPBRGH2
+                                           	extern	_CM12CON
+                                           	extern	_CM2CON1
+                                           	extern	_CM2CON
+                                           	extern	_CM2CON0
+                                           	extern	_CM1CON
+                                           	extern	_CM1CON0
+                                           	extern	_PIE4
+                                           	extern	_PIR4
+                                           	extern	_IPR4
+                                           	extern	_PIE5
+                                           	extern	_PIR5
+                                           	extern	_IPR5
+                                           	extern	_PORTA
+                                           	extern	_PORTB
+                                           	extern	_PORTC
+                                           	extern	_PORTD
+                                           	extern	_PORTE
+                                           	extern	_LATA
+                                           	extern	_LATB
+                                           	extern	_LATC
+                                           	extern	_LATD
+                                           	extern	_LATE
+                                           	extern	_DDRA
+                                           	extern	_TRISA
+                                           	extern	_DDRB
+                                           	extern	_TRISB
+                                           	extern	_DDRC
+                                           	extern	_TRISC
+                                           	extern	_DDRD
+                                           	extern	_TRISD
+                                           	extern	_DDRE
+                                           	extern	_TRISE
+                                           	extern	_OSCTUNE
+                                           	extern	_HLVDCON
+                                           	extern	_LVDCON
+                                           	extern	_PIE1
+                                           	extern	_PIR1
+                                           	extern	_IPR1
+                                           	extern	_PIE2
+                                           	extern	_PIR2
+                                           	extern	_IPR2
+                                           	extern	_PIE3
+                                           	extern	_PIR3
+                                           	extern	_IPR3
+                                           	extern	_EECON1
+                                           	extern	_EECON2
+                                           	extern	_EEDATA
+                                           	extern	_EEADR
+                                           	extern	_EEADRH
+                                           	extern	_RC1STA
+                                           	extern	_RCSTA
+                                           	extern	_RCSTA1
+                                           	extern	_TX1STA
+                                           	extern	_TXSTA
+                                           	extern	_TXSTA1
+                                           	extern	_TX1REG
+                                           	extern	_TXREG
+                                           	extern	_TXREG1
+                                           	extern	_RC1REG
+                                           	extern	_RCREG
+                                           	extern	_RCREG1
+                                           	extern	_SP1BRG
+                                           	extern	_SPBRG
+                                           	extern	_SPBRG1
+                                           	extern	_SP1BRGH
+                                           	extern	_SPBRGH
+                                           	extern	_SPBRGH1
+                                           	extern	_T3CON
+                                           	extern	_TMR3
+                                           	extern	_TMR3L
+                                           	extern	_TMR3H
+                                           	extern	_T3GCON
+                                           	extern	_ECCP1AS
+                                           	extern	_ECCPAS
+                                           	extern	_PWM1CON
+                                           	extern	_PWMCON
+                                           	extern	_BAUD1CON
+                                           	extern	_BAUDCON
+                                           	extern	_BAUDCON1
+                                           	extern	_BAUDCTL
+                                           	extern	_PSTR1CON
+                                           	extern	_PSTRCON
+                                           	extern	_T2CON
+                                           	extern	_PR2
+                                           	extern	_TMR2
+                                           	extern	_CCP1CON
+                                           	extern	_CCPR1
+                                           	extern	_CCPR1L
+                                           	extern	_CCPR1H
+                                           	extern	_ADCON2
+                                           	extern	_ADCON1
+                                           	extern	_ADCON0
+                                           	extern	_ADRES
+                                           	extern	_ADRESL
+                                           	extern	_ADRESH
+                                           	extern	_SSP1CON2
+                                           	extern	_SSPCON2
+                                           	extern	_SSP1CON1
+                                           	extern	_SSPCON1
+                                           	extern	_SSP1STAT
+                                           	extern	_SSPSTAT
+                                           	extern	_SSP1ADD
+                                           	extern	_SSPADD
+                                           	extern	_SSP1BUF
+                                           	extern	_SSPBUF
+                                           	extern	_SSP1MSK
+                                           	extern	_SSPMSK
+                                           	extern	_SSP1CON3
+                                           	extern	_SSPCON3
+                                           	extern	_T1GCON
+                                           	extern	_T1CON
+                                           	extern	_TMR1
+                                           	extern	_TMR1L
+                                           	extern	_TMR1H
+                                           	extern	_RCON
+                                           	extern	_WDTCON
+                                           	extern	_OSCCON2
+                                           	extern	_OSCCON
+                                           	extern	_T0CON
+                                           	extern	_TMR0
+                                           	extern	_TMR0L
+                                           	extern	_TMR0H
+                                           	extern	_STATUS
+                                           	extern	_FSR2L
+                                           	extern	_FSR2H
+                                           	extern	_PLUSW2
+                                           	extern	_PREINC2
+                                           	extern	_POSTDEC2
+                                           	extern	_POSTINC2
+                                           	extern	_INDF2
+                                           	extern	_BSR
+                                           	extern	_FSR1L
+                                           	extern	_FSR1H
+                                           	extern	_PLUSW1
+                                           	extern	_PREINC1
+                                           	extern	_POSTDEC1
+                                           	extern	_POSTINC1
+                                           	extern	_INDF1
+                                           	extern	_WREG
+                                           	extern	_FSR0L
+                                           	extern	_FSR0H
+                                           	extern	_PLUSW0
+                                           	extern	_PREINC0
+                                           	extern	_POSTDEC0
+                                           	extern	_POSTINC0
+                                           	extern	_INDF0
+                                           	extern	_INTCON3
+                                           	extern	_INTCON2
+                                           	extern	_INTCON
+                                           	extern	_PROD
+                                           	extern	_PRODL
+                                           	extern	_PRODH
+                                           	extern	_TABLAT
+                                           	extern	_TBLPTR
+                                           	extern	_TBLPTRL
+                                           	extern	_TBLPTRH
+                                           	extern	_TBLPTRU
+                                           	extern	_PC
+                                           	extern	_PCL
+                                           	extern	_PCLATH
+                                           	extern	_PCLATU
+                                           	extern	_STKPTR
+                                           	extern	_TOS
+                                           	extern	_TOSL
+                                           	extern	_TOSH
+                                           	extern	_TOSU
+                                           	extern	_delay10tcy
+                                           	extern	_delay100tcy
+                                           	extern	_delay1ktcy
+                                           	extern	_delay10ktcy
+                                           	extern	_uitoa
+                                           	extern	_cinit
+
+                                           ;--------------------------------------------------------
+                                           ;	Equates to used internal registers
+                                           ;--------------------------------------------------------
+                                           STATUS	equ	0xfd8
+                                           WREG	equ	0xfe8
+                                           FSR0L	equ	0xfe9
+                                           FSR1L	equ	0xfe1
+                                           FSR2L	equ	0xfd9
+                                           POSTINC1	equ	0xfe6
+                                           POSTDEC1	equ	0xfe5
+                                           PREINC1	equ	0xfe4
+                                           PLUSW2	equ	0xfdb
+                                           PRODL	equ	0xff3
+                                           PRODH	equ	0xff4
+
+
+                                           	idata
+                                           ___uflags	db	0x00
+                                           _config	db	0xef
+                                           _config2	db	0x03
+                                           _config3	db	0x70
+
+
+                                           ; Internal registers
+                                           .registers	udata_ovr	0x0000
+                                           r0x00	res	1
+                                           r0x01	res	1
+                                           r0x02	res	1
+                                           r0x03	res	1
+                                           r0x04	res	1
+
+                                           udata_main_0	udata
+                                           ___lcd_write_nibble_nibble_1_29	res	1
+
+                                           udata_main_1	udata
+                                           _LCD_POS	res	1
+
+                                           udata_main_2	udata
+                                           _s	res	5
+
+                                           ;--------------------------------------------------------
+                                           ; interrupt vector
+                                           ;--------------------------------------------------------
+
+                                           ;--------------------------------------------------------
+                                           ; global & static initialisations
+                                           ;--------------------------------------------------------
+                                           ; ; Starting pCode block
+                                           S_main___entry	code	0X000300
+                                           __entry:
+000300   ef58     goto    0x000eb0         	goto	__startup
+000302   f007
+                                           	
+                                           ; I code from now on!
+                                           ; ; Starting pCode block
+                                           S_main__main	code
+                                           _main:
+000832   010f     movlb   0xf              	BANKSEL	_ANSELA
+                                           ;	.line	39; main.c	AllDigital(); /* all pins digital */
+000834   6b38     clrf    0x38, 0x1        	CLRF	_ANSELA, B
+000836   010f     movlb   0xf              	BANKSEL	_ANSELB
+000838   6b39     clrf    0x39, 0x1        	CLRF	_ANSELB, B
+00083a   010f     movlb   0xf              	BANKSEL	_ANSELC
+00083c   6b3a     clrf    0x3a, 0x1        	CLRF	_ANSELC, B
+00083e   010f     movlb   0xf              	BANKSEL	_ANSELD
+000840   6b3b     clrf    0x3b, 0x1        	CLRF	_ANSELD, B
+000842   010f     movlb   0xf              	BANKSEL	_ANSELE
+000844   6b3c     clrf    0x3c, 0x1        	CLRF	_ANSELE, B
+000846   6ac2     clrf    0xc2, 0x0        	CLRF	_ADCON0
+000848   6ac1     clrf    0xc1, 0x0        	CLRF	_ADCON1
+00084a   6ac0     clrf    0xc0, 0x0        	CLRF	_ADCON2
+00084c   6a79     clrf    0x79, 0x0        	CLRF	_CM1CON0
+00084e   6a78     clrf    0x78, 0x0        	CLRF	_CM2CON0
+000850   6a77     clrf    0x77, 0x0        	CLRF	_CM2CON1
+                                           ;	.line	41; main.c	OnBoardLED_dir = 0; /* output */
+000852   9494     bcf     0x94, 0x2, 0x0   	BCF	_TRISCbits, 2
+                                           ;	.line	42; main.c	OnBoardButton_dir = 1; /* input */
+000854   8892     bsf     0x92, 0x4, 0x0   	BSF	_TRISAbits, 4
+                                           ;	.line	43; main.c	OnBoardLED = 0;
+000856   948b     bcf     0x8b, 0x2, 0x0   	BCF	_LATCbits, 2
+                                           ;	.line	46; main.c	TRISAbits.RA0 = 1;
+000858   8092     bsf     0x92, 0x0, 0x0   	BSF	_TRISAbits, 0
+00085a   010f     movlb   0xf              	BANKSEL	_ANSELAbits
+                                           ;	.line	47; main.c	ANSELAbits.ANSA0 = 1;
+00085c   8138     bsf     0x38, 0x0, 0x1   	BSF	_ANSELAbits, 0, B
+00085e   010f     movlb   0xf              	BANKSEL	_config3
+                                           ;	.line	49; main.c	adc_init(config, config2, config3);
+000860   5128     movf    0x28, 0x0, 0x1   	MOVF	_config3, W, B
+000862   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+000864   010f     movlb   0xf              	BANKSEL	_config2
+000866   5127     movf    0x27, 0x0, 0x1   	MOVF	_config2, W, B
+000868   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00086a   010f     movlb   0xf              	BANKSEL	_config
+00086c   5126     movf    0x26, 0x0, 0x1   	MOVF	_config, W, B
+00086e   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+000870   ec39     call    0x001072, 0x0    	CALL	_adc_init
+000872   f008
+000874   0e03     movlw   0x03             	MOVLW	0x03
+000876   26e1     addwf   0xe1, 0x1, 0x0   	ADDWF	FSR1L, F
+                                           ;	.line	50; main.c	lcd_init(LCD_HD44780);
+000878   0e00     movlw   0x00             	MOVLW	0x00
+00087a   6ae5     clrf    0xe5, 0x0        	CLRF	POSTDEC1
+00087c   ec95     call    0x00032a, 0x0    	CALL	_lcd_init
+00087e   f001
+000880   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	51; main.c	lcd_cursor_position(0, 0);
+000882   0e00     movlw   0x00             	MOVLW	0x00
+000884   6ae5     clrf    0xe5, 0x0        	CLRF	POSTDEC1
+000886   6ae5     clrf    0xe5, 0x0        	CLRF	POSTDEC1
+000888   ec77     call    0x0014ee, 0x0    	CALL	_lcd_cursor_position
+00088a   f00a
+00088c   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+00088e   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	52; main.c	lcd_write_strF(sf); /* reading the string from the FLASH */
+000890   0e00     movlw   0x00             	MOVLW	UPPER(_sf)
+000892   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+000894   0e0c     movlw   0x0c             	MOVLW	HIGH(_sf)
+000896   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+000898   0eac     movlw   0xac             	MOVLW	LOW(_sf)
+00089a   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00089c   eced     call    0x0011da, 0x0    	CALL	_lcd_write_strF
+00089e   f008
+0008a0   0e03     movlw   0x03             	MOVLW	0x03
+0008a2   26e1     addwf   0xe1, 0x1, 0x0   	ADDWF	FSR1L, F
+                                           ;	.line	53; main.c	adc_setch(ADC_CH0);
+0008a4   0e83     movlw   0x83             	MOVLW	0x83
+0008a6   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0008a8   ecb1     call    0x001562, 0x0    	CALL	_adc_setch
+0008aa   f00a
+0008ac   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           _00479_DS_:
+                                           ;	.line	56; main.c	adc_conv();
+0008ae   ec55     call    0x0016aa, 0x0    	CALL	_adc_conv
+0008b0   f00b
+                                           _00468_DS_:
+                                           ;	.line	57; main.c	do{;}while(adc_busy());
+0008b2   ec30     call    0x001660, 0x0    	CALL	_adc_busy
+0008b4   f00b
+0008b6   6e00     movwf   0x00, 0x0        	MOVWF	r0x00
+0008b8   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+0008ba   e1fb     bnz     0x0008b2         	BNZ	_00468_DS_
+                                           ;	.line	58; main.c	adcval = adc_read();
+0008bc   ec39     call    0x001672, 0x0    	CALL	_adc_read
+0008be   f00b
+0008c0   6e00     movwf   0x00, 0x0        	MOVWF	r0x00
+0008c2   6a01     clrf    0x01, 0x0        	CLRF	r0x01
+                                           ;	.line	59; main.c	lcd_cursor_position(1, 0);
+0008c4   6ae5     clrf    0xe5, 0x0        	CLRF	POSTDEC1
+0008c6   0e01     movlw   0x01             	MOVLW	0x01
+0008c8   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0008ca   ec77     call    0x0014ee, 0x0    	CALL	_lcd_cursor_position
+0008cc   f00a
+0008ce   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+0008d0   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	60; main.c	uitoa(adcval, s, 10);
+0008d2   0e0a     movlw   0x0a             	MOVLW	0x0a
+0008d4   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0008d6   0e0f     movlw   0x0f             	MOVLW	HIGH(_s)
+0008d8   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0008da   0e20     movlw   0x20             	MOVLW	LOW(_s)
+0008dc   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0008de   5001     movf    0x01, 0x0, 0x0   	MOVF	r0x01, W
+0008e0   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0008e2   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+0008e4   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0008e6   ecb3     call    0x001166, 0x0    	CALL	_uitoa
+0008e8   f008
+0008ea   0e05     movlw   0x05             	MOVLW	0x05
+0008ec   26e1     addwf   0xe1, 0x1, 0x0   	ADDWF	FSR1L, F
+                                           ;	.line	62; main.c	if(adcval < 10) { 
+0008ee   0e00     movlw   0x00             	MOVLW	0x00
+0008f0   5c01     subwf   0x01, 0x0, 0x0   	SUBWF	r0x01, W
+0008f2   e102     bnz     0x0008f8         	BNZ	_00507_DS_
+0008f4   0e0a     movlw   0x0a             	MOVLW	0x0a
+0008f6   5c00     subwf   0x00, 0x0, 0x0   	SUBWF	r0x00, W
+                                           _00507_DS_:
+0008f8   e20a     bc      0x00090e         	BC	_00471_DS_
+                                           ;	.line	63; main.c	lcd_write_str("   ");
+0008fa   0e00     movlw   0x00             	MOVLW	UPPER(___str_0)
+0008fc   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0008fe   0e0c     movlw   0x0c             	MOVLW	HIGH(___str_0)
+000900   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+000902   0eba     movlw   0xba             	MOVLW	LOW(___str_0)
+000904   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+000906   ec21     call    0x001242, 0x0    	CALL	_lcd_write_str
+000908   f009
+00090a   0e03     movlw   0x03             	MOVLW	0x03
+00090c   26e1     addwf   0xe1, 0x1, 0x0   	ADDWF	FSR1L, F
+                                           _00471_DS_:
+                                           ;	.line	65; main.c	if((adcval > 9) && (adcval < 100)) { 
+00090e   0e00     movlw   0x00             	MOVLW	0x00
+000910   5c01     subwf   0x01, 0x0, 0x0   	SUBWF	r0x01, W
+000912   e102     bnz     0x000918         	BNZ	_00508_DS_
+000914   0e0a     movlw   0x0a             	MOVLW	0x0a
+000916   5c00     subwf   0x00, 0x0, 0x0   	SUBWF	r0x00, W
+                                           _00508_DS_:
+000918   e310     bnc     0x00093a         	BNC	_00473_DS_
+00091a   0e00     movlw   0x00             	MOVLW	0x00
+00091c   5c01     subwf   0x01, 0x0, 0x0   	SUBWF	r0x01, W
+00091e   e102     bnz     0x000924         	BNZ	_00509_DS_
+000920   0e64     movlw   0x64             	MOVLW	0x64
+000922   5c00     subwf   0x00, 0x0, 0x0   	SUBWF	r0x00, W
+                                           _00509_DS_:
+000924   e20a     bc      0x00093a         	BC	_00473_DS_
+                                           ;	.line	66; main.c	lcd_write_str("  ");
+000926   0e00     movlw   0x00             	MOVLW	UPPER(___str_1)
+000928   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00092a   0e0c     movlw   0x0c             	MOVLW	HIGH(___str_1)
+00092c   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00092e   0ebe     movlw   0xbe             	MOVLW	LOW(___str_1)
+000930   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+000932   ec21     call    0x001242, 0x0    	CALL	_lcd_write_str
+000934   f009
+000936   0e03     movlw   0x03             	MOVLW	0x03
+000938   26e1     addwf   0xe1, 0x1, 0x0   	ADDWF	FSR1L, F
+                                           _00473_DS_:
+                                           ;	.line	68; main.c	if((adcval > 99) && (adcval < 1000)) { 
+00093a   0e00     movlw   0x00             	MOVLW	0x00
+00093c   5c01     subwf   0x01, 0x0, 0x0   	SUBWF	r0x01, W
+00093e   e102     bnz     0x000944         	BNZ	_00510_DS_
+000940   0e64     movlw   0x64             	MOVLW	0x64
+000942   5c00     subwf   0x00, 0x0, 0x0   	SUBWF	r0x00, W
+                                           _00510_DS_:
+000944   e310     bnc     0x000966         	BNC	_00476_DS_
+000946   0e03     movlw   0x03             	MOVLW	0x03
+000948   5c01     subwf   0x01, 0x0, 0x0   	SUBWF	r0x01, W
+00094a   e102     bnz     0x000950         	BNZ	_00511_DS_
+00094c   0ee8     movlw   0xe8             	MOVLW	0xe8
+00094e   5c00     subwf   0x00, 0x0, 0x0   	SUBWF	r0x00, W
+                                           _00511_DS_:
+000950   e20a     bc      0x000966         	BC	_00476_DS_
+                                           ;	.line	69; main.c	lcd_write_str(" ");
+000952   0e00     movlw   0x00             	MOVLW	UPPER(___str_2)
+000954   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+000956   0e0c     movlw   0x0c             	MOVLW	HIGH(___str_2)
+000958   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00095a   0ec2     movlw   0xc2             	MOVLW	LOW(___str_2)
+00095c   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00095e   ec21     call    0x001242, 0x0    	CALL	_lcd_write_str
+000960   f009
+000962   0e03     movlw   0x03             	MOVLW	0x03
+000964   26e1     addwf   0xe1, 0x1, 0x0   	ADDWF	FSR1L, F
+                                           _00476_DS_:
+                                           ;	.line	72; main.c	lcd_write_str(s);
+000966   0e80     movlw   0x80             	MOVLW	0x80
+                                           ; #	MOVWF	r0x02
+                                           ; #	MOVF	r0x02, W
+000968   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00096a   0e0f     movlw   0x0f             	MOVLW	HIGH(_s)
+00096c   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00096e   0e20     movlw   0x20             	MOVLW	LOW(_s)
+000970   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+000972   ec21     call    0x001242, 0x0    	CALL	_lcd_write_str
+000974   f009
+000976   0e03     movlw   0x03             	MOVLW	0x03
+000978   26e1     addwf   0xe1, 0x1, 0x0   	ADDWF	FSR1L, F
+                                           ;	.line	73; main.c	_delay_ms(1000);
+00097a   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00097c   0ee8     movlw   0xe8             	MOVLW	0xe8
+00097e   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+000980   ec87     call    0x00130e, 0x0    	CALL	__delay_ms
+000982   f009
+000984   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+000986   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+000988   d792     bra     0x0008ae         	BRA	_00479_DS_
+00098a   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main___startup	code
+                                           __startup:
+                                           	;	Initialize the stack pointer
+000eb0   ee11     lfsr    0x1, 0x1ff       	lfsr	1, _stack_end
+000eb2   f0ff
+000eb4   ee21     lfsr    0x2, 0x1ff       	lfsr	2, _stack_end
+000eb6   f0ff
+                                           	;	1st silicon does not do this on POR
+000eb8   6af8     clrf    0xf8, 0x0        	clrf	_TBLPTRU, 0
+                                           	;	Initialize the flash memory access configuration.
+                                           	;	This is harmless for non-flash devices, so we do it on all parts.
+000eba   8ea6     bsf     0xa6, 0x7, 0x0   	bsf	0xa6, 7, 0 ; EECON1.EEPGD = 1, TBLPTR accesses program memory
+000ebc   9ca6     bcf     0xa6, 0x6, 0x0   	bcf	0xa6, 6, 0 ; EECON1.CFGS = 0, TBLPTR accesses program memory
+                                           	;	TBLPTR = &cinit
+000ebe   0e92     movlw   0x92             	movlw	low(_cinit)
+000ec0   6ef6     movwf   0xf6, 0x0        	movwf	_TBLPTRL, 0
+000ec2   0e16     movlw   0x16             	movlw	high(_cinit)
+000ec4   6ef7     movwf   0xf7, 0x0        	movwf	_TBLPTRH, 0
+000ec6   0e00     movlw   0x00             	movlw	upper(_cinit)
+000ec8   6ef8     movwf   0xf8, 0x0        	movwf	_TBLPTRU, 0
+                                           	;	0x05 = cinit.num_init
+000eca   0009     tblrd*+                  	tblrd*+
+000ecc   cff5     movff   0xff5, 0x005     	movff	_TABLAT, 0x05
+000ece   f005
+000ed0   0009     tblrd*+                  	tblrd*+
+000ed2   cff5     movff   0xff5, 0x006     	movff	_TABLAT, (0x05 + 1)
+000ed4   f006
+                                           	;	while (0x05)
+000ed6   d034     bra     0x000f40         	bra	entry_loop_dec
+                                           entry_loop:
+                                           	;	Count down so we only have to look up the data in _cinit once.
+                                           	;	At this point we know that TBLPTR points to the top of the current
+                                           	;	entry in _cinit, so we can just start reading the from, to, and
+                                           	;	size values.
+                                           	;	Read the source address low.
+                                           	;	0x00 = 0x07 ->from;
+000ed8   0009     tblrd*+                  	tblrd*+
+000eda   cff5     movff   0xff5, 0x000     	movff	_TABLAT, 0x00
+000edc   f000
+                                           	;	source address high
+000ede   0009     tblrd*+                  	tblrd*+
+000ee0   cff5     movff   0xff5, 0x001     	movff	_TABLAT, (0x00 + 1)
+000ee2   f001
+                                           	;	source address upper
+000ee4   0009     tblrd*+                  	tblrd*+
+000ee6   cff5     movff   0xff5, 0x002     	movff	_TABLAT, (0x00 + 2)
+000ee8   f002
+                                           	;	Skip 0 byte since it is stored as 0 32bit int.
+000eea   0009     tblrd*+                  	tblrd*+
+                                           	;	Read the destination address directly into FSR0
+                                           	;	destination address low.
+                                           	;	FSR0 = (unsigned short)0x07 ->to;
+000eec   0009     tblrd*+                  	tblrd*+
+000eee   cff5     movff   0xff5, 0xfe9     	movff	_TABLAT, _FSR0L
+000ef0   ffe9
+                                           	;	destination address high
+000ef2   0009     tblrd*+                  	tblrd*+
+000ef4   cff5     movff   0xff5, 0xfea     	movff	_TABLAT, _FSR0H
+000ef6   ffea
+                                           	;	Skip two bytes since it is stored as 0 32bit int.
+000ef8   0009     tblrd*+                  	tblrd*+
+000efa   0009     tblrd*+                  	tblrd*+
+                                           	;	Read the size of data to transfer to destination address.
+                                           	;	0x03 = (unsigned short)0x07 ->size;
+000efc   0009     tblrd*+                  	tblrd*+
+000efe   cff5     movff   0xff5, 0x003     	movff	_TABLAT, 0x03
+000f00   f003
+000f02   0009     tblrd*+                  	tblrd*+
+000f04   cff5     movff   0xff5, 0x004     	movff	_TABLAT, (0x03 + 1)
+000f06   f004
+                                           	;	Skip two bytes since it is stored as 0 32bit int.
+000f08   0009     tblrd*+                  	tblrd*+
+000f0a   0009     tblrd*+                  	tblrd*+
+                                           	;	0x00 = 0x07 ->from;
+                                           	;	FSR0 = (unsigned short)0x07 ->to;
+                                           	;	0x03 = (unsigned short)0x07 ->size;
+                                           	;	The table pointer now points to the next entry. Save it
+                                           	;	off since we will be using the table pointer to do the copying
+                                           	;	for the entry.
+                                           	;	0x07 = TBLPTR
+000f0c   cff6     movff   0xff6, 0x007     	movff	_TBLPTRL, 0x07
+000f0e   f007
+000f10   cff7     movff   0xff7, 0x008     	movff	_TBLPTRH, (0x07 + 1)
+000f12   f008
+000f14   cff8     movff   0xff8, 0x009     	movff	_TBLPTRU, (0x07 + 2)
+000f16   f009
+                                           	;	Now assign the source address to the table pointer.
+                                           	;	TBLPTR = 0x00
+000f18   c000     movff   0x000, 0xff6     	movff	0x00, _TBLPTRL
+000f1a   fff6
+000f1c   c001     movff   0x001, 0xff7     	movff	(0x00 + 1), _TBLPTRH
+000f1e   fff7
+000f20   c002     movff   0x002, 0xff8     	movff	(0x00 + 2), _TBLPTRU
+000f22   fff8
+000f24   d003     bra     0x000f2c         	bra	copy_loop_dec
+                                           copy_loop:
+000f26   0009     tblrd*+                  	tblrd*+
+000f28   cff5     movff   0xff5, 0xfee     	movff	_TABLAT, _POSTINC0
+000f2a   ffee
+                                           copy_loop_dec:
+                                           	;	while (--0x03);
+                                           	;	Decrement and test the byte counter.
+                                           	;	The cycle ends when the value of counter reaches the -1.
+000f2c   0603     decf    0x03, 0x1, 0x0   	decf	0x03, f, 0
+000f2e   e2fb     bc      0x000f26         	bc	copy_loop
+000f30   0604     decf    0x04, 0x1, 0x0   	decf	(0x03 + 1), f, 0
+000f32   e2f9     bc      0x000f26         	bc	copy_loop
+                                           	;	Restore the table pointer for the next entry.
+                                           	;	TBLPTR = 0x07
+000f34   c007     movff   0x007, 0xff6     	movff	0x07, _TBLPTRL
+000f36   fff6
+000f38   c008     movff   0x008, 0xff7     	movff	(0x07 + 1), _TBLPTRH
+000f3a   fff7
+000f3c   c009     movff   0x009, 0xff8     	movff	(0x07 + 2), _TBLPTRU
+000f3e   fff8
+                                           entry_loop_dec:
+                                           	;	while (--0x05);
+                                           	;	Decrement and test the entry counter.
+                                           	;	The cycle ends when the value of counter reaches the -1.
+000f40   0605     decf    0x05, 0x1, 0x0   	decf	0x05, f, 0
+000f42   e2ca     bc      0x000ed8         	bc	entry_loop
+000f44   0606     decf    0x06, 0x1, 0x0   	decf	(0x05 + 1), f, 0
+000f46   e2c8     bc      0x000ed8         	bc	entry_loop
+                                           	
+                                           ;	.line	249; ../my_sdcc_lib/crt0i.c	main ();
+000f48   ec19     call    0x000832, 0x0    	CALL	_main
+000f4a   f004
+                                           lockup:
+                                           	;	Returning from main will lock up.
+000f4c   d7ff     bra     0x000f4c         	bra	lockup
+                                           	
+                                           ; ; Starting pCode block
+                                           S_main__adc_close	code
+                                           _adc_close:
+                                           ;	.line	227; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0bits.ADON = 0;
+0016a0   90c2     bcf     0xc2, 0x0, 0x0   	BCF	_ADCON0bits, 0
+                                           ;	.line	228; ../my_sdcc_lib/rosso_sdcc_adc.h	PIE1bits.ADIE = 0;
+0016a2   9c9d     bcf     0x9d, 0x6, 0x0   	BCF	_PIE1bits, 6
+0016a4   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main__adc_read	code
+                                           _adc_read:
+                                           ;	.line	220; ../my_sdcc_lib/rosso_sdcc_adc.h	uint8_t adc_read(void)
+001672   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+001674   ffe5
+                                           ;	.line	222; ../my_sdcc_lib/rosso_sdcc_adc.h	return (((uint8_t)ADRESH)<<8)|(ADRESL);
+001676   cfc3     movff   0xfc3, 0x000     	MOVFF	_ADRESL, r0x00
+001678   f000
+00167a   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+00167c   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+00167e   f000
+001680   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main__adc_setchconv	code
+                                           _adc_setchconv:
+                                           ;	.line	213; ../my_sdcc_lib/rosso_sdcc_adc.h	void adc_setchconv(unsigned char channel)
+00152c   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+00152e   ffe5
+001530   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+001532   ffd9
+001534   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+001536   ffe5
+001538   c001     movff   0x001, 0xfe5     	MOVFF	r0x01, POSTDEC1
+00153a   ffe5
+00153c   0e02     movlw   0x02             	MOVLW	0x02
+00153e   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+001540   f000
+                                           ;	.line	215; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0 = (ADCON0 & 0b10000011)|
+001542   0e83     movlw   0x83             	MOVLW	0x83
+001544   14c2     andwf   0xc2, 0x0, 0x0   	ANDWF	_ADCON0, W
+001546   6e01     movwf   0x01, 0x0        	MOVWF	r0x01
+                                           ;	.line	216; ../my_sdcc_lib/rosso_sdcc_adc.h	((channel) & 0b01111100);
+001548   0e7c     movlw   0x7c             	MOVLW	0x7c
+00154a   1600     andwf   0x00, 0x1, 0x0   	ANDWF	r0x00, F
+00154c   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+00154e   1001     iorwf   0x01, 0x0, 0x0   	IORWF	r0x01, W
+001550   6ec2     movwf   0xc2, 0x0        	MOVWF	_ADCON0
+                                           ;	.line	217; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0bits.GO = 1;
+001552   82c2     bsf     0xc2, 0x1, 0x0   	BSF	_ADCON0bits, 1
+001554   cfe4     movff   0xfe4, 0x001     	MOVFF	PREINC1, r0x01
+001556   f001
+001558   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+00155a   f000
+00155c   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+00155e   ffd9
+001560   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main__adc_busy	code
+                                           _adc_busy:
+                                           ;	.line	208; ../my_sdcc_lib/rosso_sdcc_adc.h	uint8_t adc_busy(void)
+001660   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+001662   ffe5
+                                           ;	.line	210; ../my_sdcc_lib/rosso_sdcc_adc.h	return(ADCON0bits.GO);
+001664   6a00     clrf    0x00, 0x0        	CLRF	r0x00
+001666   b2c2     btfsc   0xc2, 0x1, 0x0   	BTFSC	_ADCON0bits, 1
+001668   2a00     incf    0x00, 0x1, 0x0   	INCF	r0x00, F
+00166a   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+00166c   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+00166e   f000
+001670   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main__adc_conv	code
+                                           _adc_conv:
+                                           ;	.line	205; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0bits.GO = 1;
+0016aa   82c2     bsf     0xc2, 0x1, 0x0   	BSF	_ADCON0bits, 1
+0016ac   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main__adc_setch	code
+                                           _adc_setch:
+                                           ;	.line	197; ../my_sdcc_lib/rosso_sdcc_adc.h	void adc_setch(uint8_t channel)
+001562   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+001564   ffe5
+001566   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+001568   ffd9
+00156a   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+00156c   ffe5
+00156e   c001     movff   0x001, 0xfe5     	MOVFF	r0x01, POSTDEC1
+001570   ffe5
+001572   0e02     movlw   0x02             	MOVLW	0x02
+001574   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+001576   f000
+                                           ;	.line	199; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0 = (ADCON0 & 0b10000011)|
+001578   0e83     movlw   0x83             	MOVLW	0x83
+00157a   14c2     andwf   0xc2, 0x0, 0x0   	ANDWF	_ADCON0, W
+00157c   6e01     movwf   0x01, 0x0        	MOVWF	r0x01
+                                           ;	.line	200; ../my_sdcc_lib/rosso_sdcc_adc.h	((channel) & 0b01111100);
+00157e   0e7c     movlw   0x7c             	MOVLW	0x7c
+001580   1600     andwf   0x00, 0x1, 0x0   	ANDWF	r0x00, F
+001582   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+001584   1001     iorwf   0x01, 0x0, 0x0   	IORWF	r0x01, W
+001586   6ec2     movwf   0xc2, 0x0        	MOVWF	_ADCON0
+001588   cfe4     movff   0xfe4, 0x001     	MOVFF	PREINC1, r0x01
+00158a   f001
+00158c   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+00158e   f000
+001590   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+001592   ffd9
+001594   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main__adc_init	code
+                                           _adc_init:
+                                           ;	.line	171; ../my_sdcc_lib/rosso_sdcc_adc.h	void adc_init( unsigned char config,
+001072   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+001074   ffe5
+001076   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+001078   ffd9
+00107a   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+00107c   ffe5
+00107e   c001     movff   0x001, 0xfe5     	MOVFF	r0x01, POSTDEC1
+001080   ffe5
+001082   c002     movff   0x002, 0xfe5     	MOVFF	r0x02, POSTDEC1
+001084   ffe5
+001086   c003     movff   0x003, 0xfe5     	MOVFF	r0x03, POSTDEC1
+001088   ffe5
+00108a   0e02     movlw   0x02             	MOVLW	0x02
+00108c   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+00108e   f000
+001090   0e03     movlw   0x03             	MOVLW	0x03
+001092   cfdb     movff   0xfdb, 0x001     	MOVFF	PLUSW2, r0x01
+001094   f001
+001096   0e04     movlw   0x04             	MOVLW	0x04
+001098   cfdb     movff   0xfdb, 0x002     	MOVFF	PLUSW2, r0x02
+00109a   f002
+                                           ;	.line	175; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0 = 0;
+00109c   6ac2     clrf    0xc2, 0x0        	CLRF	_ADCON0
+                                           ;	.line	176; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON1 = 0;
+00109e   6ac1     clrf    0xc1, 0x0        	CLRF	_ADCON1
+                                           ;	.line	177; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON2 = 0;
+0010a0   6ac0     clrf    0xc0, 0x0        	CLRF	_ADCON2
+                                           ;	.line	179; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0 = (config2) & 0b01111100;	// GET CHANNELS 
+0010a2   0e7c     movlw   0x7c             	MOVLW	0x7c
+0010a4   1401     andwf   0x01, 0x0, 0x0   	ANDWF	r0x01, W
+0010a6   6ec2     movwf   0xc2, 0x0        	MOVWF	_ADCON0
+                                           ;	.line	181; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON1 = config3; // Vref+/- & Trigger & Negetive channel select
+0010a8   c002     movff   0x002, 0xfc1     	MOVFF	r0x02, _ADCON1
+0010aa   ffc1
+                                           ;	.line	183; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON2 = (config & 0b10000000)	|	// RESULT
+0010ac   0e80     movlw   0x80             	MOVLW	0x80
+0010ae   1400     andwf   0x00, 0x0, 0x0   	ANDWF	r0x00, W
+0010b0   6e02     movwf   0x02, 0x0        	MOVWF	r0x02
+                                           ;	.line	184; ../my_sdcc_lib/rosso_sdcc_adc.h	((config >> 4) & 0b00000111) |	// CONV CLK
+0010b2   3800     swapf   0x00, 0x0, 0x0   	SWAPF	r0x00, W
+0010b4   0b0f     andlw   0x0f             	ANDLW	0x0f
+0010b6   6e03     movwf   0x03, 0x0        	MOVWF	r0x03
+0010b8   0e07     movlw   0x07             	MOVLW	0x07
+0010ba   1603     andwf   0x03, 0x1, 0x0   	ANDWF	r0x03, F
+0010bc   5003     movf    0x03, 0x0, 0x0   	MOVF	r0x03, W
+0010be   1202     iorwf   0x02, 0x1, 0x0   	IORWF	r0x02, F
+                                           ;	.line	185; ../my_sdcc_lib/rosso_sdcc_adc.h	((config << 2) & 0b00111000);	// ACQ TIME
+0010c0   4400     rlncf   0x00, 0x0, 0x0   	RLNCF	r0x00, W
+0010c2   44e8     rlncf   0xe8, 0x0, 0x0   	RLNCF	WREG, W
+0010c4   0bfc     andlw   0xfc             	ANDLW	0xfc
+0010c6   6e03     movwf   0x03, 0x0        	MOVWF	r0x03
+0010c8   0e38     movlw   0x38             	MOVLW	0x38
+0010ca   1403     andwf   0x03, 0x0, 0x0   	ANDWF	r0x03, W
+                                           ; #	MOVWF	r0x00
+                                           ; #	MOVF	r0x00, W
+0010cc   1002     iorwf   0x02, 0x0, 0x0   	IORWF	r0x02, W
+0010ce   6ec0     movwf   0xc0, 0x0        	MOVWF	_ADCON2
+                                           ;	.line	187; ../my_sdcc_lib/rosso_sdcc_adc.h	if( config2 & 0b10000000 )			// ADC INT.
+0010d0   ae01     btfss   0x01, 0x7, 0x0   	BTFSS	r0x01, 7
+0010d2   d003     bra     0x0010da         	BRA	_00411_DS_
+                                           ;	.line	189; ../my_sdcc_lib/rosso_sdcc_adc.h	PIR1bits.ADIF = 0;
+0010d4   9c9e     bcf     0x9e, 0x6, 0x0   	BCF	_PIR1bits, 6
+                                           ;	.line	190; ../my_sdcc_lib/rosso_sdcc_adc.h	PIE1bits.ADIE = 1;
+0010d6   8c9d     bsf     0x9d, 0x6, 0x0   	BSF	_PIE1bits, 6
+                                           ;	.line	191; ../my_sdcc_lib/rosso_sdcc_adc.h	INTCONbits.PEIE = 1;
+0010d8   8cf2     bsf     0xf2, 0x6, 0x0   	BSF	_INTCONbits, 6
+                                           _00411_DS_:
+                                           ;	.line	193; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0bits.ADON = 1;
+0010da   80c2     bsf     0xc2, 0x0, 0x0   	BSF	_ADCON0bits, 0
+0010dc   cfe4     movff   0xfe4, 0x003     	MOVFF	PREINC1, r0x03
+0010de   f003
+0010e0   cfe4     movff   0xfe4, 0x002     	MOVFF	PREINC1, r0x02
+0010e2   f002
+0010e4   cfe4     movff   0xfe4, 0x001     	MOVFF	PREINC1, r0x01
+0010e6   f001
+0010e8   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+0010ea   f000
+0010ec   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+0010ee   ffd9
+0010f0   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main__lcd_init	code
+                                           _lcd_init:
+                                           ;	.line	220; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_init(CHIP chipset) {
+00032a   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+00032c   ffe5
+00032e   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+000330   ffd9
+000332   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+000334   ffe5
+000336   0e02     movlw   0x02             	MOVLW	0x02
+000338   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+00033a   f000
+                                           ;	.line	239; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_RS_DIR = 0;
+00033c   9296     bcf     0x96, 0x1, 0x0   	BCF	_TRISEbits, 1
+                                           ;	.line	240; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_EN_DIR = 0;
+00033e   9496     bcf     0x96, 0x2, 0x0   	BCF	_TRISEbits, 2
+                                           ;	.line	241; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D4_DIR = 0;
+000340   9893     bcf     0x93, 0x4, 0x0   	BCF	_TRISBbits, 4
+                                           ;	.line	242; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D5_DIR = 0;
+000342   9a93     bcf     0x93, 0x5, 0x0   	BCF	_TRISBbits, 5
+                                           ;	.line	243; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D6_DIR = 0;
+000344   9c93     bcf     0x93, 0x6, 0x0   	BCF	_TRISBbits, 6
+                                           ;	.line	244; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D7_DIR = 0;
+000346   9e93     bcf     0x93, 0x7, 0x0   	BCF	_TRISBbits, 7
+                                           ;	.line	246; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_RS = 0; // set to control char mode
+000348   928d     bcf     0x8d, 0x1, 0x0   	BCF	_LATEbits, 1
+                                           ;	.line	247; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (chipset == LCD_HD44780) {
+00034a   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+00034c   a4d8     btfss   0xd8, 0x2, 0x0   	BTFSS	STATUS, 2
+00034e   d09a     bra     0x000484         	BRA	_00394_DS_
+                                           ;	.line	248; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_25ms(); // power-up delay (> 15 ms)
+000350   0e28     movlw   0x28             	MOVLW	0x28
+000352   ec7c     call    0x000cf8, 0x0    	CALL	_delay10ktcy
+000354   f006
+                                           ;	.line	249; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000011); // function set
+000356   0e03     movlw   0x03             	MOVLW	0x03
+000358   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00035a   eca7     call    0x000f4e, 0x0    	CALL	___lcd_write_nibble
+00035c   f007
+00035e   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	250; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_5ms(); // > 4.1 milliseconds
+000360   0e50     movlw   0x50             	MOVLW	0x50
+000362   ec69     call    0x000cd2, 0x0    	CALL	_delay1ktcy
+000364   f006
+                                           ;	.line	251; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000011); // function set
+000366   0e03     movlw   0x03             	MOVLW	0x03
+000368   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00036a   eca7     call    0x000f4e, 0x0    	CALL	___lcd_write_nibble
+00036c   f007
+00036e   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	252; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_100us(); // > 100 us
+000370   0ea0     movlw   0xa0             	MOVLW	0xa0
+000372   eca8     call    0x000d50, 0x0    	CALL	_delay10tcy
+000374   f006
+                                           ;	.line	253; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000011); // function set
+000376   0e03     movlw   0x03             	MOVLW	0x03
+000378   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00037a   eca7     call    0x000f4e, 0x0    	CALL	___lcd_write_nibble
+00037c   f007
+00037e   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	254; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_35us(); // > 37 us
+000380   0e38     movlw   0x38             	MOVLW	0x38
+000382   eca8     call    0x000d50, 0x0    	CALL	_delay10tcy
+000384   f006
+000386   0000     nop                      	nop	
+000388   0000     nop                      	nop	
+00038a   0000     nop                      	nop	
+00038c   0000     nop                      	nop	
+00038e   0000     nop                      	nop	
+000390   0000     nop                      	nop	
+000392   0000     nop                      	nop	
+000394   0000     nop                      	nop	
+000396   0000     nop                      	nop	
+000398   0000     nop                      	nop	
+00039a   0000     nop                      	nop	
+00039c   0000     nop                      	nop	
+00039e   0000     nop                      	nop	
+0003a0   0000     nop                      	nop	
+0003a2   0000     nop                      	nop	
+0003a4   0000     nop                      	nop	
+0003a6   0000     nop                      	nop	
+0003a8   0000     nop                      	nop	
+0003aa   0000     nop                      	nop	
+0003ac   0000     nop                      	nop	
+0003ae   0000     nop                      	nop	
+0003b0   0000     nop                      	nop	
+0003b2   0000     nop                      	nop	
+0003b4   0000     nop                      	nop	
+0003b6   0000     nop                      	nop	
+0003b8   0000     nop                      	nop	
+0003ba   0000     nop                      	nop	
+0003bc   0000     nop                      	nop	
+0003be   0000     nop                      	nop	
+0003c0   0000     nop                      	nop	
+0003c2   0000     nop                      	nop	
+0003c4   0000     nop                      	nop	
+0003c6   0000     nop                      	nop	
+0003c8   0000     nop                      	nop	
+0003ca   0000     nop                      	nop	
+0003cc   0000     nop                      	nop	
+0003ce   0000     nop                      	nop	
+0003d0   0000     nop                      	nop	
+0003d2   0000     nop                      	nop	
+0003d4   0000     nop                      	nop	
+0003d6   0000     nop                      	nop	
+0003d8   0000     nop                      	nop	
+0003da   0000     nop                      	nop	
+0003dc   0000     nop                      	nop	
+0003de   0000     nop                      	nop	
+0003e0   0000     nop                      	nop	
+0003e2   0000     nop                      	nop	
+0003e4   0000     nop                      	nop	
+                                           ;	.line	256; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000010); // select 4-bits mode
+0003e6   0e02     movlw   0x02             	MOVLW	0x02
+0003e8   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0003ea   eca7     call    0x000f4e, 0x0    	CALL	___lcd_write_nibble
+0003ec   f007
+0003ee   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	257; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_35us(); // > 37 us
+0003f0   0e38     movlw   0x38             	MOVLW	0x38
+0003f2   eca8     call    0x000d50, 0x0    	CALL	_delay10tcy
+0003f4   f006
+0003f6   0000     nop                      	nop	
+0003f8   0000     nop                      	nop	
+0003fa   0000     nop                      	nop	
+0003fc   0000     nop                      	nop	
+0003fe   0000     nop                      	nop	
+000400   0000     nop                      	nop	
+000402   0000     nop                      	nop	
+000404   0000     nop                      	nop	
+000406   0000     nop                      	nop	
+000408   0000     nop                      	nop	
+00040a   0000     nop                      	nop	
+00040c   0000     nop                      	nop	
+00040e   0000     nop                      	nop	
+000410   0000     nop                      	nop	
+000412   0000     nop                      	nop	
+000414   0000     nop                      	nop	
+000416   0000     nop                      	nop	
+000418   0000     nop                      	nop	
+00041a   0000     nop                      	nop	
+00041c   0000     nop                      	nop	
+00041e   0000     nop                      	nop	
+000420   0000     nop                      	nop	
+000422   0000     nop                      	nop	
+000424   0000     nop                      	nop	
+000426   0000     nop                      	nop	
+000428   0000     nop                      	nop	
+00042a   0000     nop                      	nop	
+00042c   0000     nop                      	nop	
+00042e   0000     nop                      	nop	
+000430   0000     nop                      	nop	
+000432   0000     nop                      	nop	
+000434   0000     nop                      	nop	
+000436   0000     nop                      	nop	
+000438   0000     nop                      	nop	
+00043a   0000     nop                      	nop	
+00043c   0000     nop                      	nop	
+00043e   0000     nop                      	nop	
+000440   0000     nop                      	nop	
+000442   0000     nop                      	nop	
+000444   0000     nop                      	nop	
+000446   0000     nop                      	nop	
+000448   0000     nop                      	nop	
+00044a   0000     nop                      	nop	
+00044c   0000     nop                      	nop	
+00044e   0000     nop                      	nop	
+000450   0000     nop                      	nop	
+000452   0000     nop                      	nop	
+000454   0000     nop                      	nop	
+                                           ;	.line	259; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(0b00101000); // 2 lines, 5x8 dots font
+000456   0e28     movlw   0x28             	MOVLW	0x28
+000458   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00045a   eccb     call    0x001596, 0x0    	CALL	__lcd_write_command
+00045c   f00a
+00045e   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	260; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(0b00011100); // cursor (not data) move right
+000460   0e1c     movlw   0x1c             	MOVLW	0x1c
+000462   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+000464   eccb     call    0x001596, 0x0    	CALL	__lcd_write_command
+000466   f00a
+000468   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	261; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(0b00001100); // display on, cursor off, no blink
+00046a   0e0c     movlw   0x0c             	MOVLW	0x0c
+00046c   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00046e   eccb     call    0x001596, 0x0    	CALL	__lcd_write_command
+000470   f00a
+000472   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	262; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(0b00000110); // cursor shift right, no data shift
+000474   0e06     movlw   0x06             	MOVLW	0x06
+000476   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+000478   eccb     call    0x001596, 0x0    	CALL	__lcd_write_command
+00047a   f00a
+00047c   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	264; ../my_sdcc_lib/rosso_sdcc_lcd4.h	lcd_clear_screen(); // clear display
+00047e   ec13     call    0x001626, 0x0    	CALL	_lcd_clear_screen
+000480   f00b
+000482   d0f6     bra     0x000670         	BRA	_00396_DS_
+                                           _00394_DS_:
+                                           ;	.line	265; ../my_sdcc_lib/rosso_sdcc_lcd4.h	} else if (chipset == LCD_ST7066U) {
+000484   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+000486   0a01     xorlw   0x01             	XORLW	0x01
+000488   e001     bz      0x00048c         	BZ	_00405_DS_
+00048a   d0f2     bra     0x000670         	BRA	_00396_DS_
+                                           _00405_DS_:
+                                           ;	.line	266; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000011);
+00048c   0e03     movlw   0x03             	MOVLW	0x03
+00048e   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+000490   eca7     call    0x000f4e, 0x0    	CALL	___lcd_write_nibble
+000492   f007
+000494   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	267; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_40us();
+000496   0e40     movlw   0x40             	MOVLW	0x40
+000498   eca8     call    0x000d50, 0x0    	CALL	_delay10tcy
+00049a   f006
+                                           ;	.line	268; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000010);
+00049c   0e02     movlw   0x02             	MOVLW	0x02
+00049e   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0004a0   eca7     call    0x000f4e, 0x0    	CALL	___lcd_write_nibble
+0004a2   f007
+0004a4   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	269; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00001100);
+0004a6   0e0c     movlw   0x0c             	MOVLW	0x0c
+0004a8   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0004aa   eca7     call    0x000f4e, 0x0    	CALL	___lcd_write_nibble
+0004ac   f007
+0004ae   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	270; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_40us();
+0004b0   0e40     movlw   0x40             	MOVLW	0x40
+0004b2   eca8     call    0x000d50, 0x0    	CALL	_delay10tcy
+0004b4   f006
+                                           ;	.line	271; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000010);
+0004b6   0e02     movlw   0x02             	MOVLW	0x02
+0004b8   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0004ba   eca7     call    0x000f4e, 0x0    	CALL	___lcd_write_nibble
+0004bc   f007
+0004be   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	272; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00001100);
+0004c0   0e0c     movlw   0x0c             	MOVLW	0x0c
+0004c2   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0004c4   eca7     call    0x000f4e, 0x0    	CALL	___lcd_write_nibble
+0004c6   f007
+0004c8   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	273; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_35us(); // > 37 us
+0004ca   0e38     movlw   0x38             	MOVLW	0x38
+0004cc   eca8     call    0x000d50, 0x0    	CALL	_delay10tcy
+0004ce   f006
+0004d0   0000     nop                      	nop	
+0004d2   0000     nop                      	nop	
+0004d4   0000     nop                      	nop	
+0004d6   0000     nop                      	nop	
+0004d8   0000     nop                      	nop	
+0004da   0000     nop                      	nop	
+0004dc   0000     nop                      	nop	
+0004de   0000     nop                      	nop	
+0004e0   0000     nop                      	nop	
+0004e2   0000     nop                      	nop	
+0004e4   0000     nop                      	nop	
+0004e6   0000     nop                      	nop	
+0004e8   0000     nop                      	nop	
+0004ea   0000     nop                      	nop	
+0004ec   0000     nop                      	nop	
+0004ee   0000     nop                      	nop	
+0004f0   0000     nop                      	nop	
+0004f2   0000     nop                      	nop	
+0004f4   0000     nop                      	nop	
+0004f6   0000     nop                      	nop	
+0004f8   0000     nop                      	nop	
+0004fa   0000     nop                      	nop	
+0004fc   0000     nop                      	nop	
+0004fe   0000     nop                      	nop	
+000500   0000     nop                      	nop	
+000502   0000     nop                      	nop	
+000504   0000     nop                      	nop	
+000506   0000     nop                      	nop	
+000508   0000     nop                      	nop	
+00050a   0000     nop                      	nop	
+00050c   0000     nop                      	nop	
+00050e   0000     nop                      	nop	
+000510   0000     nop                      	nop	
+000512   0000     nop                      	nop	
+000514   0000     nop                      	nop	
+000516   0000     nop                      	nop	
+000518   0000     nop                      	nop	
+00051a   0000     nop                      	nop	
+00051c   0000     nop                      	nop	
+00051e   0000     nop                      	nop	
+000520   0000     nop                      	nop	
+000522   0000     nop                      	nop	
+000524   0000     nop                      	nop	
+000526   0000     nop                      	nop	
+000528   0000     nop                      	nop	
+00052a   0000     nop                      	nop	
+00052c   0000     nop                      	nop	
+00052e   0000     nop                      	nop	
+                                           ;	.line	275; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000000); // display on / off
+000530   0e00     movlw   0x00             	MOVLW	0x00
+000532   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+000534   eca7     call    0x000f4e, 0x0    	CALL	___lcd_write_nibble
+000536   f007
+000538   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	276; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00001100);
+00053a   0e0c     movlw   0x0c             	MOVLW	0x0c
+00053c   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00053e   eca7     call    0x000f4e, 0x0    	CALL	___lcd_write_nibble
+000540   f007
+000542   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	277; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_35us(); // > 37 us
+000544   0e38     movlw   0x38             	MOVLW	0x38
+000546   eca8     call    0x000d50, 0x0    	CALL	_delay10tcy
+000548   f006
+00054a   0000     nop                      	nop	
+00054c   0000     nop                      	nop	
+00054e   0000     nop                      	nop	
+000550   0000     nop                      	nop	
+000552   0000     nop                      	nop	
+000554   0000     nop                      	nop	
+000556   0000     nop                      	nop	
+000558   0000     nop                      	nop	
+00055a   0000     nop                      	nop	
+00055c   0000     nop                      	nop	
+00055e   0000     nop                      	nop	
+000560   0000     nop                      	nop	
+000562   0000     nop                      	nop	
+000564   0000     nop                      	nop	
+000566   0000     nop                      	nop	
+000568   0000     nop                      	nop	
+00056a   0000     nop                      	nop	
+00056c   0000     nop                      	nop	
+00056e   0000     nop                      	nop	
+000570   0000     nop                      	nop	
+000572   0000     nop                      	nop	
+000574   0000     nop                      	nop	
+000576   0000     nop                      	nop	
+000578   0000     nop                      	nop	
+00057a   0000     nop                      	nop	
+00057c   0000     nop                      	nop	
+00057e   0000     nop                      	nop	
+000580   0000     nop                      	nop	
+000582   0000     nop                      	nop	
+000584   0000     nop                      	nop	
+000586   0000     nop                      	nop	
+000588   0000     nop                      	nop	
+00058a   0000     nop                      	nop	
+00058c   0000     nop                      	nop	
+00058e   0000     nop                      	nop	
+000590   0000     nop                      	nop	
+000592   0000     nop                      	nop	
+000594   0000     nop                      	nop	
+000596   0000     nop                      	nop	
+000598   0000     nop                      	nop	
+00059a   0000     nop                      	nop	
+00059c   0000     nop                      	nop	
+00059e   0000     nop                      	nop	
+0005a0   0000     nop                      	nop	
+0005a2   0000     nop                      	nop	
+0005a4   0000     nop                      	nop	
+0005a6   0000     nop                      	nop	
+0005a8   0000     nop                      	nop	
+                                           ;	.line	279; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000000); // display clear
+0005aa   0e00     movlw   0x00             	MOVLW	0x00
+0005ac   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0005ae   eca7     call    0x000f4e, 0x0    	CALL	___lcd_write_nibble
+0005b0   f007
+0005b2   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	280; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000001);
+0005b4   0e01     movlw   0x01             	MOVLW	0x01
+0005b6   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0005b8   eca7     call    0x000f4e, 0x0    	CALL	___lcd_write_nibble
+0005ba   f007
+0005bc   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	281; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_1ms();
+0005be   0ea0     movlw   0xa0             	MOVLW	0xa0
+0005c0   ec95     call    0x000d2a, 0x0    	CALL	_delay100tcy
+0005c2   f006
+                                           ;	.line	282; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_500us();
+0005c4   0e50     movlw   0x50             	MOVLW	0x50
+0005c6   ec95     call    0x000d2a, 0x0    	CALL	_delay100tcy
+0005c8   f006
+                                           ;	.line	283; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_40us();
+0005ca   0e40     movlw   0x40             	MOVLW	0x40
+0005cc   eca8     call    0x000d50, 0x0    	CALL	_delay10tcy
+0005ce   f006
+                                           ;	.line	284; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000000); // entry mode set
+0005d0   0e00     movlw   0x00             	MOVLW	0x00
+0005d2   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0005d4   eca7     call    0x000f4e, 0x0    	CALL	___lcd_write_nibble
+0005d6   f007
+0005d8   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	285; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000110);
+0005da   0e06     movlw   0x06             	MOVLW	0x06
+0005dc   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0005de   eca7     call    0x000f4e, 0x0    	CALL	___lcd_write_nibble
+0005e0   f007
+0005e2   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	286; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_35us(); // > 37 us
+0005e4   0e38     movlw   0x38             	MOVLW	0x38
+0005e6   eca8     call    0x000d50, 0x0    	CALL	_delay10tcy
+0005e8   f006
+0005ea   0000     nop                      	nop	
+0005ec   0000     nop                      	nop	
+0005ee   0000     nop                      	nop	
+0005f0   0000     nop                      	nop	
+0005f2   0000     nop                      	nop	
+0005f4   0000     nop                      	nop	
+0005f6   0000     nop                      	nop	
+0005f8   0000     nop                      	nop	
+0005fa   0000     nop                      	nop	
+0005fc   0000     nop                      	nop	
+0005fe   0000     nop                      	nop	
+000600   0000     nop                      	nop	
+000602   0000     nop                      	nop	
+000604   0000     nop                      	nop	
+000606   0000     nop                      	nop	
+000608   0000     nop                      	nop	
+00060a   0000     nop                      	nop	
+00060c   0000     nop                      	nop	
+00060e   0000     nop                      	nop	
+000610   0000     nop                      	nop	
+000612   0000     nop                      	nop	
+000614   0000     nop                      	nop	
+000616   0000     nop                      	nop	
+000618   0000     nop                      	nop	
+00061a   0000     nop                      	nop	
+00061c   0000     nop                      	nop	
+00061e   0000     nop                      	nop	
+000620   0000     nop                      	nop	
+000622   0000     nop                      	nop	
+000624   0000     nop                      	nop	
+000626   0000     nop                      	nop	
+000628   0000     nop                      	nop	
+00062a   0000     nop                      	nop	
+00062c   0000     nop                      	nop	
+00062e   0000     nop                      	nop	
+000630   0000     nop                      	nop	
+000632   0000     nop                      	nop	
+000634   0000     nop                      	nop	
+000636   0000     nop                      	nop	
+000638   0000     nop                      	nop	
+00063a   0000     nop                      	nop	
+00063c   0000     nop                      	nop	
+00063e   0000     nop                      	nop	
+000640   0000     nop                      	nop	
+000642   0000     nop                      	nop	
+000644   0000     nop                      	nop	
+000646   0000     nop                      	nop	
+000648   0000     nop                      	nop	
+                                           ;	.line	288; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000000); // display clear
+00064a   0e00     movlw   0x00             	MOVLW	0x00
+00064c   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00064e   eca7     call    0x000f4e, 0x0    	CALL	___lcd_write_nibble
+000650   f007
+000652   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	289; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(0b00000001);
+000654   0e01     movlw   0x01             	MOVLW	0x01
+000656   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+000658   eca7     call    0x000f4e, 0x0    	CALL	___lcd_write_nibble
+00065a   f007
+00065c   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	290; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_1ms();
+00065e   0ea0     movlw   0xa0             	MOVLW	0xa0
+000660   ec95     call    0x000d2a, 0x0    	CALL	_delay100tcy
+000662   f006
+                                           ;	.line	291; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_500us();
+000664   0e50     movlw   0x50             	MOVLW	0x50
+000666   ec95     call    0x000d2a, 0x0    	CALL	_delay100tcy
+000668   f006
+                                           ;	.line	292; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_40us();
+00066a   0e40     movlw   0x40             	MOVLW	0x40
+00066c   eca8     call    0x000d50, 0x0    	CALL	_delay10tcy
+00066e   f006
+                                           _00396_DS_:
+000670   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+000672   f000
+000674   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+000676   ffd9
+000678   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main__lcd_progress	code
+                                           _lcd_progress:
+                                           ;	.line	212; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_progress(uint8_t line, uint8_t amount, uint8_t pattern) {
+000d68   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+000d6a   ffe5
+000d6c   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+000d6e   ffd9
+000d70   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+000d72   ffe5
+000d74   c001     movff   0x001, 0xfe5     	MOVFF	r0x01, POSTDEC1
+000d76   ffe5
+000d78   c002     movff   0x002, 0xfe5     	MOVFF	r0x02, POSTDEC1
+000d7a   ffe5
+000d7c   c003     movff   0x003, 0xfe5     	MOVFF	r0x03, POSTDEC1
+000d7e   ffe5
+000d80   c004     movff   0x004, 0xfe5     	MOVFF	r0x04, POSTDEC1
+000d82   ffe5
+000d84   0e02     movlw   0x02             	MOVLW	0x02
+000d86   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+000d88   f000
+000d8a   0e03     movlw   0x03             	MOVLW	0x03
+000d8c   cfdb     movff   0xfdb, 0x001     	MOVFF	PLUSW2, r0x01
+000d8e   f001
+000d90   0e04     movlw   0x04             	MOVLW	0x04
+000d92   cfdb     movff   0xfdb, 0x002     	MOVFF	PLUSW2, r0x02
+000d94   f002
+                                           ;	.line	214; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_POS = _lcd_line2index(line);
+000d96   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+000d98   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+000d9a   ecb4     call    0x001368, 0x0    	CALL	__lcd_line2index
+000d9c   f009
+000d9e   010f     movlb   0xf              	BANKSEL	_LCD_POS
+000da0   6f2a     movwf   0x2a, 0x1        	MOVWF	_LCD_POS, B
+000da2   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	215; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_restore_cursor();
+000da4   ec41     call    0x001682, 0x0    	CALL	__lcd_restore_cursor
+000da6   f00b
+                                           ;	.line	216; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < amount; i++) lcd_write_char(pattern);
+000da8   6a00     clrf    0x00, 0x0        	CLRF	r0x00
+                                           _00364_DS_:
+000daa   5001     movf    0x01, 0x0, 0x0   	MOVF	r0x01, W
+000dac   5c00     subwf   0x00, 0x0, 0x0   	SUBWF	r0x00, W
+000dae   e207     bc      0x000dbe         	BC	_00361_DS_
+000db0   5002     movf    0x02, 0x0, 0x0   	MOVF	r0x02, W
+000db2   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+000db4   ec82     call    0x000304, 0x0    	CALL	_lcd_write_char
+000db6   f001
+000db8   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+000dba   2a00     incf    0x00, 0x1, 0x0   	INCF	r0x00, F
+000dbc   d7f6     bra     0x000daa         	BRA	_00364_DS_
+                                           _00361_DS_:
+                                           ;	.line	217; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < LCD_NR_CHARS - amount; i++) lcd_write_char(' ');
+000dbe   6a00     clrf    0x00, 0x0        	CLRF	r0x00
+                                           _00367_DS_:
+000dc0   c001     movff   0x001, 0x002     	MOVFF	r0x01, r0x02
+000dc2   f002
+000dc4   6a03     clrf    0x03, 0x0        	CLRF	r0x03
+000dc6   5002     movf    0x02, 0x0, 0x0   	MOVF	r0x02, W
+000dc8   0810     sublw   0x10             	SUBLW	0x10
+000dca   6e02     movwf   0x02, 0x0        	MOVWF	r0x02
+000dcc   0e00     movlw   0x00             	MOVLW	0x00
+000dce   5603     subfwb  0x03, 0x1, 0x0   	SUBFWB	r0x03, F
+000dd0   c000     movff   0x000, 0x004     	MOVFF	r0x00, r0x04
+000dd2   f004
+000dd4   0f80     addlw   0x80             	ADDLW	0x80
+000dd6   6ef3     movwf   0xf3, 0x0        	MOVWF	PRODL
+000dd8   5003     movf    0x03, 0x0, 0x0   	MOVF	r0x03, W
+000dda   0f80     addlw   0x80             	ADDLW	0x80
+000ddc   5cf3     subwf   0xf3, 0x0, 0x0   	SUBWF	PRODL, W
+000dde   e102     bnz     0x000de4         	BNZ	_00386_DS_
+000de0   5002     movf    0x02, 0x0, 0x0   	MOVF	r0x02, W
+000de2   5c04     subwf   0x04, 0x0, 0x0   	SUBWF	r0x04, W
+                                           _00386_DS_:
+000de4   e207     bc      0x000df4         	BC	_00369_DS_
+000de6   0e20     movlw   0x20             	MOVLW	0x20
+000de8   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+000dea   ec82     call    0x000304, 0x0    	CALL	_lcd_write_char
+000dec   f001
+000dee   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+000df0   2a00     incf    0x00, 0x1, 0x0   	INCF	r0x00, F
+000df2   d7e6     bra     0x000dc0         	BRA	_00367_DS_
+                                           _00369_DS_:
+000df4   cfe4     movff   0xfe4, 0x004     	MOVFF	PREINC1, r0x04
+000df6   f004
+000df8   cfe4     movff   0xfe4, 0x003     	MOVFF	PREINC1, r0x03
+000dfa   f003
+000dfc   cfe4     movff   0xfe4, 0x002     	MOVFF	PREINC1, r0x02
+000dfe   f002
+000e00   cfe4     movff   0xfe4, 0x001     	MOVFF	PREINC1, r0x01
+000e02   f001
+000e04   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+000e06   f000
+000e08   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+000e0a   ffd9
+000e0c   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main__lcd_clear_line	code
+                                           _lcd_clear_line:
+                                           ;	.line	201; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_clear_line(uint8_t line) {
+0013b0   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+0013b2   ffe5
+0013b4   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+0013b6   ffd9
+0013b8   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+0013ba   ffe5
+0013bc   0e02     movlw   0x02             	MOVLW	0x02
+0013be   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+0013c0   f000
+                                           ;	.line	204; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_POS = _lcd_line2index(line);
+0013c2   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+0013c4   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0013c6   ecb4     call    0x001368, 0x0    	CALL	__lcd_line2index
+0013c8   f009
+0013ca   010f     movlb   0xf              	BANKSEL	_LCD_POS
+0013cc   6f2a     movwf   0x2a, 0x1        	MOVWF	_LCD_POS, B
+0013ce   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	205; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_restore_cursor();
+0013d0   ec41     call    0x001682, 0x0    	CALL	__lcd_restore_cursor
+0013d2   f00b
+                                           ;	.line	207; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < LCD_NR_CHARS; i++) lcd_write_char(' ');
+0013d4   6a00     clrf    0x00, 0x0        	CLRF	r0x00
+                                           _00345_DS_:
+0013d6   0e20     movlw   0x20             	MOVLW	0x20
+0013d8   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0013da   ec82     call    0x000304, 0x0    	CALL	_lcd_write_char
+0013dc   f001
+0013de   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+0013e0   2a00     incf    0x00, 0x1, 0x0   	INCF	r0x00, F
+0013e2   0e10     movlw   0x10             	MOVLW	0x10
+0013e4   5c00     subwf   0x00, 0x0, 0x0   	SUBWF	r0x00, W
+0013e6   e3f7     bnc     0x0013d6         	BNC	_00345_DS_
+                                           ;	.line	209; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_restore_cursor();
+0013e8   ec41     call    0x001682, 0x0    	CALL	__lcd_restore_cursor
+0013ea   f00b
+0013ec   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+0013ee   f000
+0013f0   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+0013f2   ffd9
+0013f4   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main__lcd_home	code
+                                           _lcd_home:
+                                           ;	.line	195; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(LCD_RETURN_HOME);
+001608   0e02     movlw   0x02             	MOVLW	0x02
+00160a   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00160c   eccb     call    0x001596, 0x0    	CALL	__lcd_write_command
+00160e   f00a
+001610   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	196; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_1ms();
+001612   0ea0     movlw   0xa0             	MOVLW	0xa0
+001614   ec95     call    0x000d2a, 0x0    	CALL	_delay100tcy
+001616   f006
+                                           ;	.line	197; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_500us();
+001618   0e50     movlw   0x50             	MOVLW	0x50
+00161a   ec95     call    0x000d2a, 0x0    	CALL	_delay100tcy
+00161c   f006
+                                           ;	.line	198; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_300us();
+00161e   0e30     movlw   0x30             	MOVLW	0x30
+001620   ec95     call    0x000d2a, 0x0    	CALL	_delay100tcy
+001622   f006
+001624   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main__lcd_cursor_blink_display	code
+                                           _lcd_cursor_blink_display:
+                                           ;	.line	185; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_cursor_blink_display(bit_t cursor, bit_t blink, bit_t display) {
+0012aa   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+0012ac   ffe5
+0012ae   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+0012b0   ffd9
+0012b2   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+0012b4   ffe5
+0012b6   c001     movff   0x001, 0xfe5     	MOVFF	r0x01, POSTDEC1
+0012b8   ffe5
+0012ba   c002     movff   0x002, 0xfe5     	MOVFF	r0x02, POSTDEC1
+0012bc   ffe5
+0012be   c003     movff   0x003, 0xfe5     	MOVFF	r0x03, POSTDEC1
+0012c0   ffe5
+0012c2   0e02     movlw   0x02             	MOVLW	0x02
+0012c4   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+0012c6   f000
+0012c8   0e03     movlw   0x03             	MOVLW	0x03
+0012ca   cfdb     movff   0xfdb, 0x001     	MOVFF	PLUSW2, r0x01
+0012cc   f001
+0012ce   0e04     movlw   0x04             	MOVLW	0x04
+0012d0   cfdb     movff   0xfdb, 0x002     	MOVFF	PLUSW2, r0x02
+0012d2   f002
+                                           ;	.line	187; ../my_sdcc_lib/rosso_sdcc_lcd4.h	reg = LCD_DISPLAY_ONOFF;
+0012d4   0e08     movlw   0x08             	MOVLW	0x08
+0012d6   6e03     movwf   0x03, 0x0        	MOVWF	r0x03
+                                           ;	.line	188; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (display) reg = reg + 4;
+0012d8   5002     movf    0x02, 0x0, 0x0   	MOVF	r0x02, W
+0012da   e002     bz      0x0012e0         	BZ	_00329_DS_
+0012dc   0e0c     movlw   0x0c             	MOVLW	0x0c
+0012de   6e03     movwf   0x03, 0x0        	MOVWF	r0x03
+                                           _00329_DS_:
+                                           ;	.line	189; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (cursor) reg = reg + 2;
+0012e0   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+0012e2   e002     bz      0x0012e8         	BZ	_00331_DS_
+0012e4   2a03     incf    0x03, 0x1, 0x0   	INCF	r0x03, F
+0012e6   2a03     incf    0x03, 0x1, 0x0   	INCF	r0x03, F
+                                           _00331_DS_:
+                                           ;	.line	190; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (blink) reg = reg + 1;
+0012e8   5001     movf    0x01, 0x0, 0x0   	MOVF	r0x01, W
+0012ea   e001     bz      0x0012ee         	BZ	_00333_DS_
+0012ec   2a03     incf    0x03, 0x1, 0x0   	INCF	r0x03, F
+                                           _00333_DS_:
+                                           ;	.line	191; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(reg);
+0012ee   5003     movf    0x03, 0x0, 0x0   	MOVF	r0x03, W
+0012f0   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0012f2   eccb     call    0x001596, 0x0    	CALL	__lcd_write_command
+0012f4   f00a
+0012f6   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+0012f8   cfe4     movff   0xfe4, 0x003     	MOVFF	PREINC1, r0x03
+0012fa   f003
+0012fc   cfe4     movff   0xfe4, 0x002     	MOVFF	PREINC1, r0x02
+0012fe   f002
+001300   cfe4     movff   0xfe4, 0x001     	MOVFF	PREINC1, r0x01
+001302   f001
+001304   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+001306   f000
+001308   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+00130a   ffd9
+00130c   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main__lcd_clear_screen	code
+                                           _lcd_clear_screen:
+                                           ;	.line	179; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(LCD_CLEAR_DISPLAY);
+001626   0e01     movlw   0x01             	MOVLW	0x01
+001628   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00162a   eccb     call    0x001596, 0x0    	CALL	__lcd_write_command
+00162c   f00a
+00162e   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	180; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_1ms();
+001630   0ea0     movlw   0xa0             	MOVLW	0xa0
+001632   ec95     call    0x000d2a, 0x0    	CALL	_delay100tcy
+001634   f006
+                                           ;	.line	181; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_500us();
+001636   0e50     movlw   0x50             	MOVLW	0x50
+001638   ec95     call    0x000d2a, 0x0    	CALL	_delay100tcy
+00163a   f006
+                                           ;	.line	182; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_300us();
+00163c   0e30     movlw   0x30             	MOVLW	0x30
+00163e   ec95     call    0x000d2a, 0x0    	CALL	_delay100tcy
+001640   f006
+001642   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main__lcd_cursor_shift_right	code
+                                           _lcd_cursor_shift_right:
+                                           ;	.line	171; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_cursor_shift_right(uint8_t nr) {
+0013f6   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+0013f8   ffe5
+0013fa   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+0013fc   ffd9
+0013fe   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+001400   ffe5
+001402   c001     movff   0x001, 0xfe5     	MOVFF	r0x01, POSTDEC1
+001404   ffe5
+001406   0e02     movlw   0x02             	MOVLW	0x02
+001408   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+00140a   f000
+                                           ;	.line	173; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (nr > 0) {
+00140c   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+00140e   e00b     bz      0x001426         	BZ	_00306_DS_
+                                           ;	.line	174; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < nr; i++) _lcd_write_command(LCD_CURSOR_SHIFT_R_VAL);
+001410   6a01     clrf    0x01, 0x0        	CLRF	r0x01
+                                           _00304_DS_:
+001412   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+001414   5c01     subwf   0x01, 0x0, 0x0   	SUBWF	r0x01, W
+001416   e207     bc      0x001426         	BC	_00306_DS_
+001418   0e14     movlw   0x14             	MOVLW	0x14
+00141a   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00141c   eccb     call    0x001596, 0x0    	CALL	__lcd_write_command
+00141e   f00a
+001420   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+001422   2a01     incf    0x01, 0x1, 0x0   	INCF	r0x01, F
+001424   d7f6     bra     0x001412         	BRA	_00304_DS_
+                                           _00306_DS_:
+001426   cfe4     movff   0xfe4, 0x001     	MOVFF	PREINC1, r0x01
+001428   f001
+00142a   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+00142c   f000
+00142e   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+001430   ffd9
+001432   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main__lcd_cursor_shift_left	code
+                                           _lcd_cursor_shift_left:
+                                           ;	.line	164; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_cursor_shift_left(uint8_t nr) {
+001434   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+001436   ffe5
+001438   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+00143a   ffd9
+00143c   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+00143e   ffe5
+001440   c001     movff   0x001, 0xfe5     	MOVFF	r0x01, POSTDEC1
+001442   ffe5
+001444   0e02     movlw   0x02             	MOVLW	0x02
+001446   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+001448   f000
+                                           ;	.line	166; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (nr > 0) {
+00144a   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+00144c   e00b     bz      0x001464         	BZ	_00283_DS_
+                                           ;	.line	167; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < nr; i++) _lcd_write_command(LCD_CURSOR_SHIFT_L_VAL);
+00144e   6a01     clrf    0x01, 0x0        	CLRF	r0x01
+                                           _00281_DS_:
+001450   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+001452   5c01     subwf   0x01, 0x0, 0x0   	SUBWF	r0x01, W
+001454   e207     bc      0x001464         	BC	_00283_DS_
+001456   0e10     movlw   0x10             	MOVLW	0x10
+001458   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00145a   eccb     call    0x001596, 0x0    	CALL	__lcd_write_command
+00145c   f00a
+00145e   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+001460   2a01     incf    0x01, 0x1, 0x0   	INCF	r0x01, F
+001462   d7f6     bra     0x001450         	BRA	_00281_DS_
+                                           _00283_DS_:
+001464   cfe4     movff   0xfe4, 0x001     	MOVFF	PREINC1, r0x01
+001466   f001
+001468   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+00146a   f000
+00146c   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+00146e   ffd9
+001470   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main__lcd_shift_right	code
+                                           _lcd_shift_right:
+                                           ;	.line	157; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_shift_right(uint8_t nr) {
+001472   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+001474   ffe5
+001476   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+001478   ffd9
+00147a   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+00147c   ffe5
+00147e   c001     movff   0x001, 0xfe5     	MOVFF	r0x01, POSTDEC1
+001480   ffe5
+001482   0e02     movlw   0x02             	MOVLW	0x02
+001484   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+001486   f000
+                                           ;	.line	159; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (nr > 0) {
+001488   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+00148a   e00b     bz      0x0014a2         	BZ	_00260_DS_
+                                           ;	.line	160; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < nr; i++) _lcd_write_command(LCD_DISPLAY_SHIFT_RIGHT);
+00148c   6a01     clrf    0x01, 0x0        	CLRF	r0x01
+                                           _00258_DS_:
+00148e   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+001490   5c01     subwf   0x01, 0x0, 0x0   	SUBWF	r0x01, W
+001492   e207     bc      0x0014a2         	BC	_00260_DS_
+001494   0e1c     movlw   0x1c             	MOVLW	0x1c
+001496   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+001498   eccb     call    0x001596, 0x0    	CALL	__lcd_write_command
+00149a   f00a
+00149c   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+00149e   2a01     incf    0x01, 0x1, 0x0   	INCF	r0x01, F
+0014a0   d7f6     bra     0x00148e         	BRA	_00258_DS_
+                                           _00260_DS_:
+0014a2   cfe4     movff   0xfe4, 0x001     	MOVFF	PREINC1, r0x01
+0014a4   f001
+0014a6   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+0014a8   f000
+0014aa   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+0014ac   ffd9
+0014ae   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main__lcd_shift_left	code
+                                           _lcd_shift_left:
+                                           ;	.line	150; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_shift_left(uint8_t nr) {
+0014b0   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+0014b2   ffe5
+0014b4   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+0014b6   ffd9
+0014b8   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+0014ba   ffe5
+0014bc   c001     movff   0x001, 0xfe5     	MOVFF	r0x01, POSTDEC1
+0014be   ffe5
+0014c0   0e02     movlw   0x02             	MOVLW	0x02
+0014c2   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+0014c4   f000
+                                           ;	.line	152; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (nr > 0) {
+0014c6   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+0014c8   e00b     bz      0x0014e0         	BZ	_00237_DS_
+                                           ;	.line	153; ../my_sdcc_lib/rosso_sdcc_lcd4.h	for (i = 0; i < nr; i++) _lcd_write_command(LCD_DISPLAY_SHIFT_LEFT);
+0014ca   6a01     clrf    0x01, 0x0        	CLRF	r0x01
+                                           _00235_DS_:
+0014cc   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+0014ce   5c01     subwf   0x01, 0x0, 0x0   	SUBWF	r0x01, W
+0014d0   e207     bc      0x0014e0         	BC	_00237_DS_
+0014d2   0e18     movlw   0x18             	MOVLW	0x18
+0014d4   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0014d6   eccb     call    0x001596, 0x0    	CALL	__lcd_write_command
+0014d8   f00a
+0014da   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+0014dc   2a01     incf    0x01, 0x1, 0x0   	INCF	r0x01, F
+0014de   d7f6     bra     0x0014cc         	BRA	_00235_DS_
+                                           _00237_DS_:
+0014e0   cfe4     movff   0xfe4, 0x001     	MOVFF	PREINC1, r0x01
+0014e2   f001
+0014e4   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+0014e6   f000
+0014e8   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+0014ea   ffd9
+0014ec   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main__lcd_cursor_position	code
+                                           _lcd_cursor_position:
+                                           ;	.line	145; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_cursor_position(uint8_t line, uint8_t pos) {
+0014ee   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+0014f0   ffe5
+0014f2   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+0014f4   ffd9
+0014f6   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+0014f8   ffe5
+0014fa   c001     movff   0x001, 0xfe5     	MOVFF	r0x01, POSTDEC1
+0014fc   ffe5
+0014fe   0e02     movlw   0x02             	MOVLW	0x02
+001500   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+001502   f000
+001504   0e03     movlw   0x03             	MOVLW	0x03
+001506   cfdb     movff   0xfdb, 0x001     	MOVFF	PLUSW2, r0x01
+001508   f001
+                                           ;	.line	146; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_POS = pos + _lcd_line2index(line);
+00150a   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+00150c   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00150e   ecb4     call    0x001368, 0x0    	CALL	__lcd_line2index
+001510   f009
+001512   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+001514   2401     addwf   0x01, 0x0, 0x0   	ADDWF	r0x01, W
+001516   010f     movlb   0xf              	BANKSEL	_LCD_POS
+001518   6f2a     movwf   0x2a, 0x1        	MOVWF	_LCD_POS, B
+                                           ;	.line	147; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_restore_cursor();
+00151a   ec41     call    0x001682, 0x0    	CALL	__lcd_restore_cursor
+00151c   f00b
+00151e   cfe4     movff   0xfe4, 0x001     	MOVFF	PREINC1, r0x01
+001520   f001
+001522   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+001524   f000
+001526   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+001528   ffd9
+00152a   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main__lcd_write_strF	code
+                                           _lcd_write_strF:
+                                           ;	.line	138; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_write_strF(const uint8_t *data){
+0011da   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+0011dc   ffe5
+0011de   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+0011e0   ffd9
+0011e2   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+0011e4   ffe5
+0011e6   c001     movff   0x001, 0xfe5     	MOVFF	r0x01, POSTDEC1
+0011e8   ffe5
+0011ea   c002     movff   0x002, 0xfe5     	MOVFF	r0x02, POSTDEC1
+0011ec   ffe5
+0011ee   c003     movff   0x003, 0xfe5     	MOVFF	r0x03, POSTDEC1
+0011f0   ffe5
+0011f2   0e02     movlw   0x02             	MOVLW	0x02
+0011f4   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+0011f6   f000
+0011f8   0e03     movlw   0x03             	MOVLW	0x03
+0011fa   cfdb     movff   0xfdb, 0x001     	MOVFF	PLUSW2, r0x01
+0011fc   f001
+0011fe   0e04     movlw   0x04             	MOVLW	0x04
+001200   cfdb     movff   0xfdb, 0x002     	MOVFF	PLUSW2, r0x02
+001202   f002
+                                           _00209_DS_:
+                                           ;	.line	139; ../my_sdcc_lib/rosso_sdcc_lcd4.h	while(*data){
+001204   c000     movff   0x000, 0xfe9     	MOVFF	r0x00, FSR0L
+001206   ffe9
+001208   c001     movff   0x001, 0xff3     	MOVFF	r0x01, PRODL
+00120a   fff3
+00120c   5002     movf    0x02, 0x0, 0x0   	MOVF	r0x02, W
+00120e   ecf3     call    0x0015e6, 0x0    	CALL	__gptrget1
+001210   f00a
+001212   6e03     movwf   0x03, 0x0        	MOVWF	r0x03
+001214   5003     movf    0x03, 0x0, 0x0   	MOVF	r0x03, W
+001216   e00a     bz      0x00122c         	BZ	_00212_DS_
+                                           ;	.line	140; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_data(*data);
+001218   5003     movf    0x03, 0x0, 0x0   	MOVF	r0x03, W
+00121a   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00121c   ecdf     call    0x0015be, 0x0    	CALL	__lcd_write_data
+00121e   f00a
+001220   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	141; ../my_sdcc_lib/rosso_sdcc_lcd4.h	*data++;
+001222   2a00     incf    0x00, 0x1, 0x0   	INCF	r0x00, F
+001224   e3ef     bnc     0x001204         	BNC	_00209_DS_
+001226   4a01     infsnz  0x01, 0x1, 0x0   	INFSNZ	r0x01, F
+001228   2a02     incf    0x02, 0x1, 0x0   	INCF	r0x02, F
+                                           _00221_DS_:
+00122a   d7ec     bra     0x001204         	BRA	_00209_DS_
+                                           _00212_DS_:
+00122c   cfe4     movff   0xfe4, 0x003     	MOVFF	PREINC1, r0x03
+00122e   f003
+001230   cfe4     movff   0xfe4, 0x002     	MOVFF	PREINC1, r0x02
+001232   f002
+001234   cfe4     movff   0xfe4, 0x001     	MOVFF	PREINC1, r0x01
+001236   f001
+001238   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+00123a   f000
+00123c   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+00123e   ffd9
+001240   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main__lcd_write_str	code
+                                           _lcd_write_str:
+                                           ;	.line	131; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_write_str(uint8_t *data){
+001242   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+001244   ffe5
+001246   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+001248   ffd9
+00124a   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+00124c   ffe5
+00124e   c001     movff   0x001, 0xfe5     	MOVFF	r0x01, POSTDEC1
+001250   ffe5
+001252   c002     movff   0x002, 0xfe5     	MOVFF	r0x02, POSTDEC1
+001254   ffe5
+001256   c003     movff   0x003, 0xfe5     	MOVFF	r0x03, POSTDEC1
+001258   ffe5
+00125a   0e02     movlw   0x02             	MOVLW	0x02
+00125c   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+00125e   f000
+001260   0e03     movlw   0x03             	MOVLW	0x03
+001262   cfdb     movff   0xfdb, 0x001     	MOVFF	PLUSW2, r0x01
+001264   f001
+001266   0e04     movlw   0x04             	MOVLW	0x04
+001268   cfdb     movff   0xfdb, 0x002     	MOVFF	PLUSW2, r0x02
+00126a   f002
+                                           _00192_DS_:
+                                           ;	.line	132; ../my_sdcc_lib/rosso_sdcc_lcd4.h	while(*data){
+00126c   c000     movff   0x000, 0xfe9     	MOVFF	r0x00, FSR0L
+00126e   ffe9
+001270   c001     movff   0x001, 0xff3     	MOVFF	r0x01, PRODL
+001272   fff3
+001274   5002     movf    0x02, 0x0, 0x0   	MOVF	r0x02, W
+001276   ecf3     call    0x0015e6, 0x0    	CALL	__gptrget1
+001278   f00a
+00127a   6e03     movwf   0x03, 0x0        	MOVWF	r0x03
+00127c   5003     movf    0x03, 0x0, 0x0   	MOVF	r0x03, W
+00127e   e00a     bz      0x001294         	BZ	_00195_DS_
+                                           ;	.line	133; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_data(*data);
+001280   5003     movf    0x03, 0x0, 0x0   	MOVF	r0x03, W
+001282   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+001284   ecdf     call    0x0015be, 0x0    	CALL	__lcd_write_data
+001286   f00a
+001288   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	134; ../my_sdcc_lib/rosso_sdcc_lcd4.h	*data++;
+00128a   2a00     incf    0x00, 0x1, 0x0   	INCF	r0x00, F
+00128c   e3ef     bnc     0x00126c         	BNC	_00192_DS_
+00128e   4a01     infsnz  0x01, 0x1, 0x0   	INFSNZ	r0x01, F
+001290   2a02     incf    0x02, 0x1, 0x0   	INCF	r0x02, F
+                                           _00204_DS_:
+001292   d7ec     bra     0x00126c         	BRA	_00192_DS_
+                                           _00195_DS_:
+001294   cfe4     movff   0xfe4, 0x003     	MOVFF	PREINC1, r0x03
+001296   f003
+001298   cfe4     movff   0xfe4, 0x002     	MOVFF	PREINC1, r0x02
+00129a   f002
+00129c   cfe4     movff   0xfe4, 0x001     	MOVFF	PREINC1, r0x01
+00129e   f001
+0012a0   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+0012a2   f000
+0012a4   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+0012a6   ffd9
+0012a8   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main__lcd_write_char	code
+                                           _lcd_write_char:
+                                           ;	.line	127; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void lcd_write_char(uint8_t data) {
+000304   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+000306   ffe5
+000308   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+00030a   ffd9
+00030c   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+00030e   ffe5
+000310   0e02     movlw   0x02             	MOVLW	0x02
+000312   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+000314   f000
+                                           ;	.line	128; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_data(data);
+000316   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+000318   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00031a   ecdf     call    0x0015be, 0x0    	CALL	__lcd_write_data
+00031c   f00a
+00031e   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+000320   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+000322   f000
+000324   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+000326   ffd9
+000328   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main___lcd_restore_cursor	code
+                                           __lcd_restore_cursor:
+                                           ;	.line	124; ../my_sdcc_lib/rosso_sdcc_lcd4.h	_lcd_write_command(LCD_SET_DDRAM_ADDRESS | LCD_POS);
+001682   0e80     movlw   0x80             	MOVLW	0x80
+001684   010f     movlb   0xf              	BANKSEL	_LCD_POS
+001686   112a     iorwf   0x2a, 0x0, 0x1   	IORWF	_LCD_POS, W, B
+                                           ; #	MOVWF	r0x00
+                                           ; #	MOVF	r0x00, W
+001688   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+00168a   eccb     call    0x001596, 0x0    	CALL	__lcd_write_command
+00168c   f00a
+00168e   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+001690   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main___lcd_line2index	code
+                                           __lcd_line2index:
+                                           ;	.line	112; ../my_sdcc_lib/rosso_sdcc_lcd4.h	uint8_t _lcd_line2index(uint8_t line) {
+001368   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+00136a   ffe5
+00136c   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+00136e   ffd9
+001370   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+001372   ffe5
+001374   0e02     movlw   0x02             	MOVLW	0x02
+001376   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+001378   f000
+                                           ;	.line	114; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (line < LCD_NR_LINES) {
+00137a   5c00     subwf   0x00, 0x0, 0x0   	SUBWF	r0x00, W
+00137c   e213     bc      0x0013a4         	BC	_00153_DS_
+                                           ;	.line	115; ../my_sdcc_lib/rosso_sdcc_lcd4.h	if (line == 0) return 0x00;
+00137e   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+001380   e102     bnz     0x001386         	BNZ	_00150_DS_
+001382   6ae8     clrf    0xe8, 0x0        	CLRF	WREG
+001384   d010     bra     0x0013a6         	BRA	_00154_DS_
+                                           _00150_DS_:
+                                           ;	.line	116; ../my_sdcc_lib/rosso_sdcc_lcd4.h	else if (line == 1) return 0x40;
+001386   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+001388   0a01     xorlw   0x01             	XORLW	0x01
+00138a   e102     bnz     0x001390         	BNZ	_00147_DS_
+00138c   0e40     movlw   0x40             	MOVLW	0x40
+00138e   d00b     bra     0x0013a6         	BRA	_00154_DS_
+                                           _00147_DS_:
+                                           ;	.line	117; ../my_sdcc_lib/rosso_sdcc_lcd4.h	else if (line == 2) return 0x00 + LCD_NR_CHARS;
+001390   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+001392   0a02     xorlw   0x02             	XORLW	0x02
+001394   e102     bnz     0x00139a         	BNZ	_00144_DS_
+001396   0e10     movlw   0x10             	MOVLW	0x10
+001398   d006     bra     0x0013a6         	BRA	_00154_DS_
+                                           _00144_DS_:
+                                           ;	.line	118; ../my_sdcc_lib/rosso_sdcc_lcd4.h	else if (line == 3) return 0x40 + LCD_NR_CHARS;
+00139a   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+00139c   0a03     xorlw   0x03             	XORLW	0x03
+00139e   e102     bnz     0x0013a4         	BNZ	_00153_DS_
+0013a0   0e50     movlw   0x50             	MOVLW	0x50
+0013a2   d001     bra     0x0013a6         	BRA	_00154_DS_
+                                           _00153_DS_:
+                                           ;	.line	120; ../my_sdcc_lib/rosso_sdcc_lcd4.h	return 0x00;
+0013a4   6ae8     clrf    0xe8, 0x0        	CLRF	WREG
+                                           _00154_DS_:
+0013a6   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+0013a8   f000
+0013aa   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+0013ac   ffd9
+0013ae   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main___lcd_write_command	code
+                                           __lcd_write_command:
+                                           ;	.line	107; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void _lcd_write_command(uint8_t value) {
+001596   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+001598   ffe5
+00159a   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+00159c   ffd9
+00159e   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+0015a0   ffe5
+0015a2   0e02     movlw   0x02             	MOVLW	0x02
+0015a4   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+0015a6   f000
+                                           ;	.line	108; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_RS = 0; // select command mode
+0015a8   928d     bcf     0x8d, 0x1, 0x0   	BCF	_LATEbits, 1
+                                           ;	.line	109; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write(value); // write byte
+0015aa   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+0015ac   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0015ae   ec07     call    0x000e0e, 0x0    	CALL	___lcd_write
+0015b0   f007
+0015b2   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+0015b4   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+0015b6   f000
+0015b8   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+0015ba   ffd9
+0015bc   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main___lcd_write_data	code
+                                           __lcd_write_data:
+                                           ;	.line	102; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void _lcd_write_data(uint8_t value) {
+0015be   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+0015c0   ffe5
+0015c2   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+0015c4   ffd9
+0015c6   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+0015c8   ffe5
+0015ca   0e02     movlw   0x02             	MOVLW	0x02
+0015cc   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+0015ce   f000
+                                           ;	.line	103; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_RS = 1; // select data mode
+0015d0   828d     bsf     0x8d, 0x1, 0x0   	BSF	_LATEbits, 1
+                                           ;	.line	104; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write(value); // write byte
+0015d2   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+0015d4   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+0015d6   ec07     call    0x000e0e, 0x0    	CALL	___lcd_write
+0015d8   f007
+0015da   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+0015dc   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+0015de   f000
+0015e0   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+0015e2   ffd9
+0015e4   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main____lcd_write	code
+                                           ___lcd_write:
+                                           ;	.line	95; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void __lcd_write(uint8_t value) {
+000e0e   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+000e10   ffe5
+000e12   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+000e14   ffd9
+000e16   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+000e18   ffe5
+000e1a   c001     movff   0x001, 0xfe5     	MOVFF	r0x01, POSTDEC1
+000e1c   ffe5
+000e1e   0e02     movlw   0x02             	MOVLW	0x02
+000e20   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+000e22   f000
+                                           ;	.line	96; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(value >> 4); // write high nibble
+000e24   3800     swapf   0x00, 0x0, 0x0   	SWAPF	r0x00, W
+000e26   0b0f     andlw   0x0f             	ANDLW	0x0f
+                                           ; #	MOVWF	r0x01
+                                           ; #	MOVF	r0x01, W
+000e28   6e01     movwf   0x01, 0x0        	MOVWF	r0x01
+000e2a   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+000e2c   eca7     call    0x000f4e, 0x0    	CALL	___lcd_write_nibble
+000e2e   f007
+000e30   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	97; ../my_sdcc_lib/rosso_sdcc_lcd4.h	__lcd_write_nibble(value); // write low nibble
+000e32   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+000e34   6ee5     movwf   0xe5, 0x0        	MOVWF	POSTDEC1
+000e36   eca7     call    0x000f4e, 0x0    	CALL	___lcd_write_nibble
+000e38   f007
+000e3a   52e6     movf    0xe6, 0x1, 0x0   	MOVF	POSTINC1, F
+                                           ;	.line	98; ../my_sdcc_lib/rosso_sdcc_lcd4.h	delay_35us(); // > 37 us
+000e3c   0e38     movlw   0x38             	MOVLW	0x38
+000e3e   eca8     call    0x000d50, 0x0    	CALL	_delay10tcy
+000e40   f006
+000e42   0000     nop                      	nop	
+000e44   0000     nop                      	nop	
+000e46   0000     nop                      	nop	
+000e48   0000     nop                      	nop	
+000e4a   0000     nop                      	nop	
+000e4c   0000     nop                      	nop	
+000e4e   0000     nop                      	nop	
+000e50   0000     nop                      	nop	
+000e52   0000     nop                      	nop	
+000e54   0000     nop                      	nop	
+000e56   0000     nop                      	nop	
+000e58   0000     nop                      	nop	
+000e5a   0000     nop                      	nop	
+000e5c   0000     nop                      	nop	
+000e5e   0000     nop                      	nop	
+000e60   0000     nop                      	nop	
+000e62   0000     nop                      	nop	
+000e64   0000     nop                      	nop	
+000e66   0000     nop                      	nop	
+000e68   0000     nop                      	nop	
+000e6a   0000     nop                      	nop	
+000e6c   0000     nop                      	nop	
+000e6e   0000     nop                      	nop	
+000e70   0000     nop                      	nop	
+000e72   0000     nop                      	nop	
+000e74   0000     nop                      	nop	
+000e76   0000     nop                      	nop	
+000e78   0000     nop                      	nop	
+000e7a   0000     nop                      	nop	
+000e7c   0000     nop                      	nop	
+000e7e   0000     nop                      	nop	
+000e80   0000     nop                      	nop	
+000e82   0000     nop                      	nop	
+000e84   0000     nop                      	nop	
+000e86   0000     nop                      	nop	
+000e88   0000     nop                      	nop	
+000e8a   0000     nop                      	nop	
+000e8c   0000     nop                      	nop	
+000e8e   0000     nop                      	nop	
+000e90   0000     nop                      	nop	
+000e92   0000     nop                      	nop	
+000e94   0000     nop                      	nop	
+000e96   0000     nop                      	nop	
+000e98   0000     nop                      	nop	
+000e9a   0000     nop                      	nop	
+000e9c   0000     nop                      	nop	
+000e9e   0000     nop                      	nop	
+000ea0   0000     nop                      	nop	
+000ea2   cfe4     movff   0xfe4, 0x001     	MOVFF	PREINC1, r0x01
+000ea4   f001
+000ea6   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+000ea8   f000
+000eaa   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+000eac   ffd9
+000eae   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main____lcd_write_nibble	code
+                                           ___lcd_write_nibble:
+                                           ;	.line	83; ../my_sdcc_lib/rosso_sdcc_lcd4.h	void __lcd_write_nibble(uint8_t value) {
+000f4e   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+000f50   ffe5
+000f52   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+000f54   ffd9
+000f56   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+000f58   ffe5
+000f5a   0e02     movlw   0x02             	MOVLW	0x02
+000f5c   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+000f5e   f000
+                                           ;	.line	85; ../my_sdcc_lib/rosso_sdcc_lcd4.h	nibble.val = value;
+000f60   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+000f62   010f     movlb   0xf              	BANKSEL	___lcd_write_nibble_nibble_1_29
+000f64   6f29     movwf   0x29, 0x1        	MOVWF	___lcd_write_nibble_nibble_1_29, B
+                                           ;	.line	86; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D4 = nibble.bits.b0;
+000f66   6a00     clrf    0x00, 0x0        	CLRF	r0x00
+                                           ; removed redundant BANKSEL
+000f68   b129     btfsc   0x29, 0x0, 0x1   	BTFSC	___lcd_write_nibble_nibble_1_29, 0, B
+000f6a   2a00     incf    0x00, 0x1, 0x0   	INCF	r0x00, F
+000f6c   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+000f6e   0b01     andlw   0x01             	ANDLW	0x01
+000f70   38e8     swapf   0xe8, 0x0, 0x0   	SWAPF	WREG, W
+000f72   6ef4     movwf   0xf4, 0x0        	MOVWF	PRODH
+000f74   508a     movf    0x8a, 0x0, 0x0   	MOVF	_LATBbits, W
+000f76   0bef     andlw   0xef             	ANDLW	0xef
+000f78   10f4     iorwf   0xf4, 0x0, 0x0   	IORWF	PRODH, W
+000f7a   6e8a     movwf   0x8a, 0x0        	MOVWF	_LATBbits
+                                           ;	.line	87; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D5 = nibble.bits.b1;
+000f7c   6a00     clrf    0x00, 0x0        	CLRF	r0x00
+                                           ; removed redundant BANKSEL
+000f7e   b329     btfsc   0x29, 0x1, 0x1   	BTFSC	___lcd_write_nibble_nibble_1_29, 1, B
+000f80   2a00     incf    0x00, 0x1, 0x0   	INCF	r0x00, F
+000f82   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+000f84   0b01     andlw   0x01             	ANDLW	0x01
+000f86   38e8     swapf   0xe8, 0x0, 0x0   	SWAPF	WREG, W
+000f88   44e8     rlncf   0xe8, 0x0, 0x0   	RLNCF	WREG, W
+000f8a   6ef4     movwf   0xf4, 0x0        	MOVWF	PRODH
+000f8c   508a     movf    0x8a, 0x0, 0x0   	MOVF	_LATBbits, W
+000f8e   0bdf     andlw   0xdf             	ANDLW	0xdf
+000f90   10f4     iorwf   0xf4, 0x0, 0x0   	IORWF	PRODH, W
+000f92   6e8a     movwf   0x8a, 0x0        	MOVWF	_LATBbits
+                                           ;	.line	88; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D6 = nibble.bits.b2;
+000f94   6a00     clrf    0x00, 0x0        	CLRF	r0x00
+                                           ; removed redundant BANKSEL
+000f96   b529     btfsc   0x29, 0x2, 0x1   	BTFSC	___lcd_write_nibble_nibble_1_29, 2, B
+000f98   2a00     incf    0x00, 0x1, 0x0   	INCF	r0x00, F
+000f9a   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+000f9c   0b01     andlw   0x01             	ANDLW	0x01
+000f9e   40e8     rrncf   0xe8, 0x0, 0x0   	RRNCF	WREG, W
+000fa0   40e8     rrncf   0xe8, 0x0, 0x0   	RRNCF	WREG, W
+000fa2   6ef4     movwf   0xf4, 0x0        	MOVWF	PRODH
+000fa4   508a     movf    0x8a, 0x0, 0x0   	MOVF	_LATBbits, W
+000fa6   0bbf     andlw   0xbf             	ANDLW	0xbf
+000fa8   10f4     iorwf   0xf4, 0x0, 0x0   	IORWF	PRODH, W
+000faa   6e8a     movwf   0x8a, 0x0        	MOVWF	_LATBbits
+                                           ;	.line	89; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_D7 = nibble.bits.b3;
+000fac   6a00     clrf    0x00, 0x0        	CLRF	r0x00
+                                           ; removed redundant BANKSEL
+000fae   b729     btfsc   0x29, 0x3, 0x1   	BTFSC	___lcd_write_nibble_nibble_1_29, 3, B
+000fb0   2a00     incf    0x00, 0x1, 0x0   	INCF	r0x00, F
+000fb2   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+000fb4   0b01     andlw   0x01             	ANDLW	0x01
+000fb6   40e8     rrncf   0xe8, 0x0, 0x0   	RRNCF	WREG, W
+000fb8   6ef4     movwf   0xf4, 0x0        	MOVWF	PRODH
+000fba   508a     movf    0x8a, 0x0, 0x0   	MOVF	_LATBbits, W
+000fbc   0b7f     andlw   0x7f             	ANDLW	0x7f
+000fbe   10f4     iorwf   0xf4, 0x0, 0x0   	IORWF	PRODH, W
+000fc0   6e8a     movwf   0x8a, 0x0        	MOVWF	_LATBbits
+                                           ;	.line	90; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_EN = 1;
+000fc2   848d     bsf     0x8d, 0x2, 0x0   	BSF	_LATEbits, 2
+000fc4   0000     nop                      	nop	
+000fc6   0000     nop                      	nop	
+000fc8   0000     nop                      	nop	
+000fca   0000     nop                      	nop	
+000fcc   0000     nop                      	nop	
+000fce   0000     nop                      	nop	
+000fd0   0000     nop                      	nop	
+000fd2   0000     nop                      	nop	
+                                           ;	.line	92; ../my_sdcc_lib/rosso_sdcc_lcd4.h	LCD_EN = 0;
+000fd4   948d     bcf     0x8d, 0x2, 0x0   	BCF	_LATEbits, 2
+000fd6   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+000fd8   f000
+000fda   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+000fdc   ffd9
+000fde   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main___delay_ms	code
+                                           __delay_ms:
+                                           ;	.line	175; ../my_sdcc_lib/rosso_sdcc.h	void _delay_ms(uint16_t x){
+00130e   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+001310   ffe5
+001312   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+001314   ffd9
+001316   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+001318   ffe5
+00131a   c001     movff   0x001, 0xfe5     	MOVFF	r0x01, POSTDEC1
+00131c   ffe5
+00131e   c002     movff   0x002, 0xfe5     	MOVFF	r0x02, POSTDEC1
+001320   ffe5
+001322   c003     movff   0x003, 0xfe5     	MOVFF	r0x03, POSTDEC1
+001324   ffe5
+001326   0e02     movlw   0x02             	MOVLW	0x02
+001328   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+00132a   f000
+00132c   0e03     movlw   0x03             	MOVLW	0x03
+00132e   cfdb     movff   0xfdb, 0x001     	MOVFF	PLUSW2, r0x01
+001330   f001
+                                           _00113_DS_:
+                                           ;	.line	177; ../my_sdcc_lib/rosso_sdcc.h	delay_1ms();
+001332   0ea0     movlw   0xa0             	MOVLW	0xa0
+001334   ec95     call    0x000d2a, 0x0    	CALL	_delay100tcy
+001336   f006
+                                           ;	.line	178; ../my_sdcc_lib/rosso_sdcc.h	}while(--x);
+001338   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+00133a   0fff     addlw   0xff             	ADDLW	0xff
+00133c   6e02     movwf   0x02, 0x0        	MOVWF	r0x02
+00133e   0eff     movlw   0xff             	MOVLW	0xff
+001340   2001     addwfc  0x01, 0x0, 0x0   	ADDWFC	r0x01, W
+001342   6e03     movwf   0x03, 0x0        	MOVWF	r0x03
+001344   c002     movff   0x002, 0x000     	MOVFF	r0x02, r0x00
+001346   f000
+001348   c003     movff   0x003, 0x001     	MOVFF	r0x03, r0x01
+00134a   f001
+00134c   5002     movf    0x02, 0x0, 0x0   	MOVF	r0x02, W
+00134e   1003     iorwf   0x03, 0x0, 0x0   	IORWF	r0x03, W
+001350   e1f0     bnz     0x001332         	BNZ	_00113_DS_
+001352   cfe4     movff   0xfe4, 0x003     	MOVFF	PREINC1, r0x03
+001354   f003
+001356   cfe4     movff   0xfe4, 0x002     	MOVFF	PREINC1, r0x02
+001358   f002
+00135a   cfe4     movff   0xfe4, 0x001     	MOVFF	PREINC1, r0x01
+00135c   f001
+00135e   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+001360   f000
+001362   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+001364   ffd9
+001366   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block
+                                           S_main___delay_us	code
+                                           __delay_us:
+                                           ;	.line	169; ../my_sdcc_lib/rosso_sdcc.h	void _delay_us(uint16_t x){
+0010f2   cfd9     movff   0xfd9, 0xfe5     	MOVFF	FSR2L, POSTDEC1
+0010f4   ffe5
+0010f6   cfe1     movff   0xfe1, 0xfd9     	MOVFF	FSR1L, FSR2L
+0010f8   ffd9
+0010fa   c000     movff   0x000, 0xfe5     	MOVFF	r0x00, POSTDEC1
+0010fc   ffe5
+0010fe   c001     movff   0x001, 0xfe5     	MOVFF	r0x01, POSTDEC1
+001100   ffe5
+001102   c002     movff   0x002, 0xfe5     	MOVFF	r0x02, POSTDEC1
+001104   ffe5
+001106   c003     movff   0x003, 0xfe5     	MOVFF	r0x03, POSTDEC1
+001108   ffe5
+00110a   0e02     movlw   0x02             	MOVLW	0x02
+00110c   cfdb     movff   0xfdb, 0x000     	MOVFF	PLUSW2, r0x00
+00110e   f000
+001110   0e03     movlw   0x03             	MOVLW	0x03
+001112   cfdb     movff   0xfdb, 0x001     	MOVFF	PLUSW2, r0x01
+001114   f001
+                                           _00105_DS_:
+001116   0000     nop                      	nop	
+001118   0000     nop                      	nop	
+00111a   0000     nop                      	nop	
+00111c   0000     nop                      	nop	
+00111e   0000     nop                      	nop	
+001120   0000     nop                      	nop	
+001122   0000     nop                      	nop	
+001124   0000     nop                      	nop	
+001126   0000     nop                      	nop	
+001128   0000     nop                      	nop	
+00112a   0000     nop                      	nop	
+00112c   0000     nop                      	nop	
+00112e   0000     nop                      	nop	
+001130   0000     nop                      	nop	
+001132   0000     nop                      	nop	
+001134   0000     nop                      	nop	
+                                           ;	.line	172; ../my_sdcc_lib/rosso_sdcc.h	}while(--x);
+001136   5000     movf    0x00, 0x0, 0x0   	MOVF	r0x00, W
+001138   0fff     addlw   0xff             	ADDLW	0xff
+00113a   6e02     movwf   0x02, 0x0        	MOVWF	r0x02
+00113c   0eff     movlw   0xff             	MOVLW	0xff
+00113e   2001     addwfc  0x01, 0x0, 0x0   	ADDWFC	r0x01, W
+001140   6e03     movwf   0x03, 0x0        	MOVWF	r0x03
+001142   c002     movff   0x002, 0x000     	MOVFF	r0x02, r0x00
+001144   f000
+001146   c003     movff   0x003, 0x001     	MOVFF	r0x03, r0x01
+001148   f001
+00114a   5002     movf    0x02, 0x0, 0x0   	MOVF	r0x02, W
+00114c   1003     iorwf   0x03, 0x0, 0x0   	IORWF	r0x03, W
+00114e   e1e3     bnz     0x001116         	BNZ	_00105_DS_
+001150   cfe4     movff   0xfe4, 0x003     	MOVFF	PREINC1, r0x03
+001152   f003
+001154   cfe4     movff   0xfe4, 0x002     	MOVFF	PREINC1, r0x02
+001156   f002
+001158   cfe4     movff   0xfe4, 0x001     	MOVFF	PREINC1, r0x01
+00115a   f001
+00115c   cfe4     movff   0xfe4, 0x000     	MOVFF	PREINC1, r0x00
+00115e   f000
+001160   cfe4     movff   0xfe4, 0xfd9     	MOVFF	PREINC1, FSR2L
+001162   ffd9
+001164   0012     return  0x0              	RETURN	
+
+                                           ; ; Starting pCode block for Ival
+                                           	code
+                                           _sf:
+000cac   6e41     movwf   0x41, 0x0        	DB	0x41, 0x6e, 0x61, 0x6c, 0x6f, 0x67, 0x20, 0x52, 0x41, 0x30, 0x3a, 0x00
+000cae   6c61     negf    0x61, 0x0        
+000cb0   676f     tstfsz  0x6f, 0x1        
+000cb2   5220     movf    0x20, 0x1, 0x0   
+000cb4   3041     rrcf    0x41, 0x0, 0x0   
+000cb6   003a     dw      0x003a           
+000cb8   0000     nop                      	DB	0x00
+                                           ; ; Starting pCode block
+                                           ___str_0:
+000cba   2020     addwfc  0x20, 0x0, 0x0   	DB	0x20, 0x20, 0x20, 0x00
+000cbc   0020     dw      0x0020           
+                                           ; ; Starting pCode block
+                                           ___str_1:
+000cbe   2020     addwfc  0x20, 0x0, 0x0   	DB	0x20, 0x20, 0x00
+000cc0   0000     nop                      
+                                           ; ; Starting pCode block
+                                           ___str_2:
+000cc2   0020     dw      0x0020           	DB	0x20, 0x00
+                                           ; ; Starting pCode block
+                                           __str_3:
+000cc4   6e41     movwf   0x41, 0x0        	DB	0x41, 0x6e, 0x61, 0x6c, 0x6f, 0x67, 0x20, 0x52, 0x41, 0x30, 0x3a, 0x00
+000cc6   6c61     negf    0x61, 0x0        
+000cc8   676f     tstfsz  0x6f, 0x1        
+000cca   5220     movf    0x20, 0x1, 0x0   
+000ccc   3041     rrcf    0x41, 0x0, 0x0   
+000cce   003a     dw      0x003a           
+000cd0   0000     nop                      	DB	0x00
+
+
+                                           ; Statistics:
+                                           ; code size:	 3340 (0x0d0c) bytes ( 2.55%)
+                                           ;           	 1670 (0x0686) words
+                                           ; udata size:	    7 (0x0007) bytes ( 0.19%)
+                                           ; access size:	    5 (0x0005) bytes
+
+
+                                           	end
+                                           ;--------------------------------------------------------------------------
+                                           ;  p18fxxx.inc
+                                           ;
+                                           ;  Copyright (C) 2005, Vangelis Rokas <vrokas AT otenet.gr>
+                                           ;
+                                           ;  This library is free software; you can redistribute it and/or modify it
+                                           ;  under the terms of the GNU General Public License as published by the
+                                           ;  Free Software Foundation; either version 2, or (at your option) any
+                                           ;  later version.
+                                           ;
+                                           ;  This library is distributed in the hope that it will be useful,
+                                           ;  but WITHOUT ANY WARRANTY; without even the implied warranty of
+                                           ;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+                                           ;  GNU General Public License for more details.
+                                           ;
+                                           ;  You should have received a copy of the GNU General Public License 
+                                           ;  along with this library; see the file COPYING. If not, write to the
+                                           ;  Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
+                                           ;   MA 02110-1301, USA.
+                                           ;
+                                           ;  As a special exception, if you link this library with other files,
+                                           ;  some of which are compiled with SDCC, to produce an executable,
+                                           ;  this library does not by itself cause the resulting executable to
+                                           ;  be covered by the GNU General Public License. This exception does
+                                           ;  not however invalidate any other reasons why the executable file
+                                           ;  might be covered by the GNU General Public License.
+                                           ;--------------------------------------------------------------------------
+
+                                           #ifndef __P18FXXX__
+                                           #define	__P18FXXX__	1
+
+
+                                           		list	r=dec, n=96, st=off, mm=off
+
+                                           	        nolist
+                                           #endif
+                                           ;--------------------------------------------------------------------------
+                                           ;  p18fxxx.inc
+                                           ;
+                                           ;  Copyright (C) 2005, Vangelis Rokas <vrokas AT otenet.gr>
+                                           ;
+                                           ;  This library is free software; you can redistribute it and/or modify it
+                                           ;  under the terms of the GNU General Public License as published by the
+                                           ;  Free Software Foundation; either version 2, or (at your option) any
+                                           ;  later version.
+                                           ;
+                                           ;  This library is distributed in the hope that it will be useful,
+                                           ;  but WITHOUT ANY WARRANTY; without even the implied warranty of
+                                           ;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+                                           ;  GNU General Public License for more details.
+                                           ;
+                                           ;  You should have received a copy of the GNU General Public License 
+                                           ;  along with this library; see the file COPYING. If not, write to the
+                                           ;  Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
+                                           ;   MA 02110-1301, USA.
+                                           ;
+                                           ;  As a special exception, if you link this library with other files,
+                                           ;  some of which are compiled with SDCC, to produce an executable,
+                                           ;  this library does not by itself cause the resulting executable to
+                                           ;  be covered by the GNU General Public License. This exception does
+                                           ;  not however invalidate any other reasons why the executable file
+                                           ;  might be covered by the GNU General Public License.
+                                           ;--------------------------------------------------------------------------
+
+                                           #ifndef __P18FXXX__
+                                           #define	__P18FXXX__	1
+
+
+                                           		list	r=dec, n=96, st=off, mm=off
+
+                                           	        nolist
+                                           #endif
+                                           ;--------------------------------------------------------------------------
+                                           ;  p18fxxx.inc
+                                           ;
+                                           ;  Copyright (C) 2005, Vangelis Rokas <vrokas AT otenet.gr>
+                                           ;
+                                           ;  This library is free software; you can redistribute it and/or modify it
+                                           ;  under the terms of the GNU General Public License as published by the
+                                           ;  Free Software Foundation; either version 2, or (at your option) any
+                                           ;  later version.
+                                           ;
+                                           ;  This library is distributed in the hope that it will be useful,
+                                           ;  but WITHOUT ANY WARRANTY; without even the implied warranty of
+                                           ;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+                                           ;  GNU General Public License for more details.
+                                           ;
+                                           ;  You should have received a copy of the GNU General Public License 
+                                           ;  along with this library; see the file COPYING. If not, write to the
+                                           ;  Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
+                                           ;   MA 02110-1301, USA.
+                                           ;
+                                           ;  As a special exception, if you link this library with other files,
+                                           ;  some of which are compiled with SDCC, to produce an executable,
+                                           ;  this library does not by itself cause the resulting executable to
+                                           ;  be covered by the GNU General Public License. This exception does
+                                           ;  not however invalidate any other reasons why the executable file
+                                           ;  might be covered by the GNU General Public License.
+                                           ;--------------------------------------------------------------------------
+
+                                           #ifndef __P18FXXX__
+                                           #define	__P18FXXX__	1
+
+
+                                           		list	r=dec, n=96, st=off, mm=off
+
+                                           	        nolist
+                                           #endif
+                                           ;--------------------------------------------------------------------------
+                                           ;  p18fxxx.inc
+                                           ;
+                                           ;  Copyright (C) 2005, Vangelis Rokas <vrokas AT otenet.gr>
+                                           ;
+                                           ;  This library is free software; you can redistribute it and/or modify it
+                                           ;  under the terms of the GNU General Public License as published by the
+                                           ;  Free Software Foundation; either version 2, or (at your option) any
+                                           ;  later version.
+                                           ;
+                                           ;  This library is distributed in the hope that it will be useful,
+                                           ;  but WITHOUT ANY WARRANTY; without even the implied warranty of
+                                           ;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+                                           ;  GNU General Public License for more details.
+                                           ;
+                                           ;  You should have received a copy of the GNU General Public License 
+                                           ;  along with this library; see the file COPYING. If not, write to the
+                                           ;  Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
+                                           ;   MA 02110-1301, USA.
+                                           ;
+                                           ;  As a special exception, if you link this library with other files,
+                                           ;  some of which are compiled with SDCC, to produce an executable,
+                                           ;  this library does not by itself cause the resulting executable to
+                                           ;  be covered by the GNU General Public License. This exception does
+                                           ;  not however invalidate any other reasons why the executable file
+                                           ;  might be covered by the GNU General Public License.
+                                           ;--------------------------------------------------------------------------
+
+                                           #ifndef __P18FXXX__
+                                           #define	__P18FXXX__	1
+
+
+                                           		list	r=dec, n=96, st=off, mm=off
+
+                                           	        nolist
+                                           #endif
