@@ -1,20 +1,8 @@
 #ifndef ROSSO_ADC_H
 #define	ROSSO_ADC_H
 
-/***********************************************************************************
-Macro       : ADC_INT_ENABLE()
-Overview : Macro enables the ADC interrupt
-Parameters   : None
-Remarks     : Interrupt is configured as low priority interrupt
-***********************************************************************************/
-#define ADC_INT_ENABLE()     (PIR1bits.ADIF=0,INTCONbits.PEIE=1,PIE1bits.ADIE=1) 
 
-/***********************************************************************************
-Macro       : ADC_INT_DISABLE()
-Overview : Macro disables the ADC interrupt
-Parameters   : None
-Remarks     : None
-***********************************************************************************/
+#define ADC_INT_ENABLE()     (PIR1bits.ADIF=0,INTCONbits.PEIE=1,PIE1bits.ADIE=1) 
 #define ADC_INT_DISABLE()    (PIE1bits.ADIE=0)
 
 #ifndef USE_OR_MASKS
@@ -145,7 +133,6 @@ Remarks     : None
 #define ADC_CH_FRV       0b11111111  			//Select Channel 31 for FRV
 
 #else
-
 #define ADC_CH0          0b00000000  			//Select Channel 0
 #define ADC_CH1          0b00000100  			//Select Channel 1
 #define ADC_CH2          0b00001000  			//Select Channel 2
@@ -180,16 +167,10 @@ Remarks     : None
 #define ADC_CH_MASK		 (~0b01111100)			//Mask ADC channel selection bits
 #endif
 
-/* Stores the result of an A/D conversion. */
-union ADCResult
-{
-	int16_t lr;			//holds the 10-bit ADC Conversion value as integer
- 	int8_t br[2];		//holds the 10-bit ADC Conversion value as two byte values
-};
 
-void adc_open( uint8_t config,
-              uint8_t config2,
-              uint8_t config3)
+void adc_init( unsigned char config,
+              unsigned char config2,
+              unsigned char config3)
 {
     ADCON0 = 0;
 	ADCON1 = 0;
@@ -205,43 +186,46 @@ void adc_open( uint8_t config,
 	
     if( config2 & 0b10000000 )			// ADC INT.
     {
-		PIR1bits.ADIF = 0;
-		PIE1bits.ADIE = 1;
-		INTCONbits.PEIE = 1;
+      PIR1bits.ADIF = 0;
+      PIE1bits.ADIE = 1;
+      INTCONbits.PEIE = 1;
     }
     ADCON0bits.ADON = 1;
 }
 
+
+void adc_setch(uint8_t channel)
+{
+  ADCON0 = (ADCON0 & 0b10000011)|
+           ((channel) & 0b01111100);
+}
+
+void adc_conv(void)
+{
+  ADCON0bits.GO = 1;
+}
+
+uint8_t adc_busy(void)
+{
+  return(ADCON0bits.GO);
+}
+
+void adc_setchconv(unsigned char channel)
+{
+  ADCON0 = (ADCON0 & 0b10000011)|
+           ((channel) & 0b01111100);
+  ADCON0bits.GO = 1;
+}
+
+uint8_t adc_read(void)
+{
+  return (((uint8_t)ADRESH)<<8)|(ADRESL);
+}
+
 void adc_close(void)
 {
-	ADCON0bits.ADON = 0;
-	PIE1bits.ADIE = 0;
+  ADCON0bits.ADON = 0;
+  PIE1bits.ADIE = 0;
 }
 
-int8_t adc_busy(void)
-{
-	return(ADCON0bits.GO);
-}
-
-int16_t adc_read(void)
-{
-	return (((uint16_t)ADRESH)<<8)|(ADRESL);
-}
-
-void adc_convert(void)
-{
-	ADCON0bits.GO = 1;
-}
-
-void adc_setchan(uint8_t channel)
-{
-	ADCON0 = (ADCON0 & 0b10000011) | ((channel) & 0b01111100);
-}
-
-void adc_selchanconv(uint8_t channel)
-{
-	ADCON0 = (ADCON0 & 0b10000011) | ((channel) & 0b01111100);
-    ADCON0bits.GO = 1;
-}
-
-#endif
+#endif //ROSSO_ADC_H
