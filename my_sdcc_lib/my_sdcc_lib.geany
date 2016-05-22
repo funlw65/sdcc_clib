@@ -28,14 +28,22 @@ long_line_behaviour=1
 long_line_column=80
 
 [files]
-current_page=6
-FILE_NAME_0=193;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Fmy_sdcc_lib%2Frosso_sdcc.h;0;4
+current_page=5
+FILE_NAME_0=7389;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Fmy_sdcc_lib%2Frosso_sdcc.h;0;4
 FILE_NAME_1=2257;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Fmy_sdcc_lib%2Frosso_sdcc_hwspi.h;0;4
-FILE_NAME_2=104;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Fmy_sdcc_lib%2Frosso_sdcc_i2c_master.h;0;4
-FILE_NAME_3=241;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Fmy_sdcc_lib%2Frosso_sdcc_lcd4.h;0;4
-FILE_NAME_4=19;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Fmy_sdcc_lib%2Frosso_sdcc_adc.h;0;4
-FILE_NAME_5=2449;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Fmy_sdcc_lib%2Frosso_sdcc_adc_orig.h;0;4
+FILE_NAME_2=3;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Fmy_sdcc_lib%2Frosso_sdcc_i2c_master.h;0;4
+FILE_NAME_3=6950;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Fmy_sdcc_lib%2Frosso_sdcc_lcd4.h;0;4
+FILE_NAME_4=10538;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Fmy_sdcc_lib%2Frosso_sdcc_adc.h;0;4
+FILE_NAME_5=5182;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Fmy_sdcc_lib%2Frosso_sdcc_adc_orig.h;0;4
 FILE_NAME_6=31;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Fmy_sdcc_lib%2Frosso_sdcc_hwserial.h;0;4
+FILE_NAME_7=3;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Fmy_sdcc_lib%2Frosso_sdcc_ow.h;0;4
+FILE_NAME_8=0;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Fmy_sdcc_lib%2Frosso_sdcc_pcf8583.h;0;4
+FILE_NAME_9=0;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Fmy_sdcc_lib%2Frosso_sdcc_pwm.h;0;4
+FILE_NAME_10=0;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Fmy_sdcc_lib%2Frosso_sdcc_conversion.h;0;4
+FILE_NAME_11=0;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Fmy_sdcc_lib%2Frosso_sdcc_hw2serial.h;0;4
+FILE_NAME_12=0;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Fmy_sdcc_lib%2Frosso_sdcc_hwspi2.h;0;4
+FILE_NAME_13=0;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Fmy_sdcc_lib%2Frosso_sdcc_i2c2_master.h;0;4
+FILE_NAME_14=0;C;0;EUTF-8;1;1;1;%2Fhome%2Fxuser%2Fwork%2Fgeany%2Fprojects%2Fmy_sdcc_lib%2Frosso_sdcc_isr_delay.h;0;4
 
 [VTE]
 last_dir=/home/xuser/work/geany/projects/blink_no_delay

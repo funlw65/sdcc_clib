@@ -167,17 +167,15 @@ typedef union {
  * Just for the illusion, as these two are introducing even more delay
  */
 void _delay_us(uint16_t x){
-    uint16_t i;
-    for(i=0; i<x; i++){
+    do{
         delay_1us();
-    }
+    }while(--x);
 }
 
 void _delay_ms(uint16_t x){
-    uint16_t i;
-    for(i=0; i<x; i++){
+    do{
         delay_1ms();
-    }
+    }while(--x);
 }
 /* end */
 

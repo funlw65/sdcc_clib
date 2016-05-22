@@ -168,10 +168,7 @@
 #endif
 
 
-void adc_init( unsigned char config,
-              unsigned char config2,
-              unsigned char config3)
-{
+void adc_init( uint8_t config, uint8_t config2, uint8_t config3) {
     ADCON0 = 0;
 	ADCON1 = 0;
     ADCON2 = 0;
@@ -186,9 +183,9 @@ void adc_init( unsigned char config,
 	
     if( config2 & 0b10000000 )			// ADC INT.
     {
-      PIR1bits.ADIF = 0;
-      PIE1bits.ADIE = 1;
-      INTCONbits.PEIE = 1;
+		PIR1bits.ADIF = 0;
+		PIE1bits.ADIE = 1;
+		INTCONbits.PEIE = 1;
     }
     ADCON0bits.ADON = 1;
 }
@@ -217,9 +214,9 @@ void adc_setchconv(unsigned char channel)
   ADCON0bits.GO = 1;
 }
 
-uint8_t adc_read(void)
+uint16_t adc_read(void)
 {
-  return (((uint8_t)ADRESH)<<8)|(ADRESL);
+  return (((uint16_t)ADRESH)<<8)|(ADRESL);
 }
 
 void adc_close(void)
