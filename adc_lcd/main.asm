@@ -594,7 +594,7 @@ _00468_DS_:
 ;	.line	58; main.c	adcval = adc_read();
 	CALL	_adc_read
 	MOVWF	r0x00
-	CLRF	r0x01
+	MOVFF	PRODL, r0x01
 ;	.line	59; main.c	lcd_cursor_position(1, 0);
 	CLRF	POSTDEC1
 	MOVLW	0x01
@@ -822,44 +822,60 @@ lockup:
 ; ; Starting pCode block
 S_main__adc_close	code
 _adc_close:
-;	.line	227; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0bits.ADON = 0;
+;	.line	224; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0bits.ADON = 0;
 	BCF	_ADCON0bits, 0
-;	.line	228; ../my_sdcc_lib/rosso_sdcc_adc.h	PIE1bits.ADIE = 0;
+;	.line	225; ../my_sdcc_lib/rosso_sdcc_adc.h	PIE1bits.ADIE = 0;
 	BCF	_PIE1bits, 6
 	RETURN	
 
 ; ; Starting pCode block
 S_main__adc_read	code
 _adc_read:
-;	.line	220; ../my_sdcc_lib/rosso_sdcc_adc.h	uint8_t adc_read(void)
+;	.line	217; ../my_sdcc_lib/rosso_sdcc_adc.h	uint16_t adc_read(void)
 	MOVFF	r0x00, POSTDEC1
-;	.line	222; ../my_sdcc_lib/rosso_sdcc_adc.h	return (((uint8_t)ADRESH)<<8)|(ADRESL);
+	MOVFF	r0x01, POSTDEC1
+	MOVFF	r0x02, POSTDEC1
+	MOVFF	r0x03, POSTDEC1
+;	.line	219; ../my_sdcc_lib/rosso_sdcc_adc.h	return (((uint16_t)ADRESH)<<8)|(ADRESL);
+	MOVFF	_ADRESH, r0x00
+	CLRF	r0x01
+	MOVF	r0x00, W
+	MOVWF	r0x03
+	CLRF	r0x02
 	MOVFF	_ADRESL, r0x00
 	MOVF	r0x00, W
+	IORWF	r0x02, F
+	MOVF	r0x01, W
+	IORWF	r0x03, F
+	MOVFF	r0x03, PRODL
+	MOVF	r0x02, W
+	MOVFF	PREINC1, r0x03
+	MOVFF	PREINC1, r0x02
+	MOVFF	PREINC1, r0x01
 	MOVFF	PREINC1, r0x00
 	RETURN	
 
 ; ; Starting pCode block
 S_main__adc_setchconv	code
 _adc_setchconv:
-;	.line	213; ../my_sdcc_lib/rosso_sdcc_adc.h	void adc_setchconv(unsigned char channel)
+;	.line	210; ../my_sdcc_lib/rosso_sdcc_adc.h	void adc_setchconv(unsigned char channel)
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
 	MOVFF	r0x01, POSTDEC1
 	MOVLW	0x02
 	MOVFF	PLUSW2, r0x00
-;	.line	215; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0 = (ADCON0 & 0b10000011)|
+;	.line	212; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0 = (ADCON0 & 0b10000011)|
 	MOVLW	0x83
 	ANDWF	_ADCON0, W
 	MOVWF	r0x01
-;	.line	216; ../my_sdcc_lib/rosso_sdcc_adc.h	((channel) & 0b01111100);
+;	.line	213; ../my_sdcc_lib/rosso_sdcc_adc.h	((channel) & 0b01111100);
 	MOVLW	0x7c
 	ANDWF	r0x00, F
 	MOVF	r0x00, W
 	IORWF	r0x01, W
 	MOVWF	_ADCON0
-;	.line	217; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0bits.GO = 1;
+;	.line	214; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0bits.GO = 1;
 	BSF	_ADCON0bits, 1
 	MOVFF	PREINC1, r0x01
 	MOVFF	PREINC1, r0x00
@@ -869,9 +885,9 @@ _adc_setchconv:
 ; ; Starting pCode block
 S_main__adc_busy	code
 _adc_busy:
-;	.line	208; ../my_sdcc_lib/rosso_sdcc_adc.h	uint8_t adc_busy(void)
+;	.line	205; ../my_sdcc_lib/rosso_sdcc_adc.h	uint8_t adc_busy(void)
 	MOVFF	r0x00, POSTDEC1
-;	.line	210; ../my_sdcc_lib/rosso_sdcc_adc.h	return(ADCON0bits.GO);
+;	.line	207; ../my_sdcc_lib/rosso_sdcc_adc.h	return(ADCON0bits.GO);
 	CLRF	r0x00
 	BTFSC	_ADCON0bits, 1
 	INCF	r0x00, F
@@ -882,25 +898,25 @@ _adc_busy:
 ; ; Starting pCode block
 S_main__adc_conv	code
 _adc_conv:
-;	.line	205; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0bits.GO = 1;
+;	.line	202; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0bits.GO = 1;
 	BSF	_ADCON0bits, 1
 	RETURN	
 
 ; ; Starting pCode block
 S_main__adc_setch	code
 _adc_setch:
-;	.line	197; ../my_sdcc_lib/rosso_sdcc_adc.h	void adc_setch(uint8_t channel)
+;	.line	194; ../my_sdcc_lib/rosso_sdcc_adc.h	void adc_setch(uint8_t channel)
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
 	MOVFF	r0x01, POSTDEC1
 	MOVLW	0x02
 	MOVFF	PLUSW2, r0x00
-;	.line	199; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0 = (ADCON0 & 0b10000011)|
+;	.line	196; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0 = (ADCON0 & 0b10000011)|
 	MOVLW	0x83
 	ANDWF	_ADCON0, W
 	MOVWF	r0x01
-;	.line	200; ../my_sdcc_lib/rosso_sdcc_adc.h	((channel) & 0b01111100);
+;	.line	197; ../my_sdcc_lib/rosso_sdcc_adc.h	((channel) & 0b01111100);
 	MOVLW	0x7c
 	ANDWF	r0x00, F
 	MOVF	r0x00, W
@@ -914,7 +930,7 @@ _adc_setch:
 ; ; Starting pCode block
 S_main__adc_init	code
 _adc_init:
-;	.line	171; ../my_sdcc_lib/rosso_sdcc_adc.h	void adc_init( unsigned char config,
+;	.line	171; ../my_sdcc_lib/rosso_sdcc_adc.h	void adc_init( uint8_t config, uint8_t config2, uint8_t config3) {
 	MOVFF	FSR2L, POSTDEC1
 	MOVFF	FSR1L, FSR2L
 	MOVFF	r0x00, POSTDEC1
@@ -927,23 +943,23 @@ _adc_init:
 	MOVFF	PLUSW2, r0x01
 	MOVLW	0x04
 	MOVFF	PLUSW2, r0x02
-;	.line	175; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0 = 0;
+;	.line	172; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0 = 0;
 	CLRF	_ADCON0
-;	.line	176; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON1 = 0;
+;	.line	173; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON1 = 0;
 	CLRF	_ADCON1
-;	.line	177; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON2 = 0;
+;	.line	174; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON2 = 0;
 	CLRF	_ADCON2
-;	.line	179; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0 = (config2) & 0b01111100;	// GET CHANNELS 
+;	.line	176; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0 = (config2) & 0b01111100;	// GET CHANNELS 
 	MOVLW	0x7c
 	ANDWF	r0x01, W
 	MOVWF	_ADCON0
-;	.line	181; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON1 = config3; // Vref+/- & Trigger & Negetive channel select
+;	.line	178; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON1 = config3; // Vref+/- & Trigger & Negetive channel select
 	MOVFF	r0x02, _ADCON1
-;	.line	183; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON2 = (config & 0b10000000)	|	// RESULT
+;	.line	180; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON2 = (config & 0b10000000)	|	// RESULT
 	MOVLW	0x80
 	ANDWF	r0x00, W
 	MOVWF	r0x02
-;	.line	184; ../my_sdcc_lib/rosso_sdcc_adc.h	((config >> 4) & 0b00000111) |	// CONV CLK
+;	.line	181; ../my_sdcc_lib/rosso_sdcc_adc.h	((config >> 4) & 0b00000111) |	// CONV CLK
 	SWAPF	r0x00, W
 	ANDLW	0x0f
 	MOVWF	r0x03
@@ -951,7 +967,7 @@ _adc_init:
 	ANDWF	r0x03, F
 	MOVF	r0x03, W
 	IORWF	r0x02, F
-;	.line	185; ../my_sdcc_lib/rosso_sdcc_adc.h	((config << 2) & 0b00111000);	// ACQ TIME
+;	.line	182; ../my_sdcc_lib/rosso_sdcc_adc.h	((config << 2) & 0b00111000);	// ACQ TIME
 	RLNCF	r0x00, W
 	RLNCF	WREG, W
 	ANDLW	0xfc
@@ -962,17 +978,17 @@ _adc_init:
 ; #	MOVF	r0x00, W
 	IORWF	r0x02, W
 	MOVWF	_ADCON2
-;	.line	187; ../my_sdcc_lib/rosso_sdcc_adc.h	if( config2 & 0b10000000 )			// ADC INT.
+;	.line	184; ../my_sdcc_lib/rosso_sdcc_adc.h	if( config2 & 0b10000000 )			// ADC INT.
 	BTFSS	r0x01, 7
 	BRA	_00411_DS_
-;	.line	189; ../my_sdcc_lib/rosso_sdcc_adc.h	PIR1bits.ADIF = 0;
+;	.line	186; ../my_sdcc_lib/rosso_sdcc_adc.h	PIR1bits.ADIF = 0;
 	BCF	_PIR1bits, 6
-;	.line	190; ../my_sdcc_lib/rosso_sdcc_adc.h	PIE1bits.ADIE = 1;
+;	.line	187; ../my_sdcc_lib/rosso_sdcc_adc.h	PIE1bits.ADIE = 1;
 	BSF	_PIE1bits, 6
-;	.line	191; ../my_sdcc_lib/rosso_sdcc_adc.h	INTCONbits.PEIE = 1;
+;	.line	188; ../my_sdcc_lib/rosso_sdcc_adc.h	INTCONbits.PEIE = 1;
 	BSF	_INTCONbits, 6
 _00411_DS_:
-;	.line	193; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0bits.ADON = 1;
+;	.line	190; ../my_sdcc_lib/rosso_sdcc_adc.h	ADCON0bits.ADON = 1;
 	BSF	_ADCON0bits, 0
 	MOVFF	PREINC1, r0x03
 	MOVFF	PREINC1, r0x02
@@ -2242,8 +2258,8 @@ __str_3:
 
 
 ; Statistics:
-; code size:	 3340 (0x0d0c) bytes ( 2.55%)
-;           	 1670 (0x0686) words
+; code size:	 3390 (0x0d3e) bytes ( 2.59%)
+;           	 1695 (0x069f) words
 ; udata size:	    7 (0x0007) bytes ( 0.19%)
 ; access size:	    5 (0x0005) bytes
 

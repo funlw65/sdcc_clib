@@ -35,7 +35,6 @@ uint8_t config3 = ADC_TRIG_CCP5 & ADC_REF_VDD_VDD & ADC_REF_VDD_VSS;
 #endif
 
 void main() {
-    uint8_t i = 0;
     uint16_t adcval = 0;
     AllDigital(); /* all pins digital */
 #ifdef ONBOARD
@@ -59,7 +58,7 @@ void main() {
         adcval = adc_read();
         lcd_cursor_position(1, 0);
         uitoa(adcval, s, 10);
-        /* formating - aligning the number to right */
+        /* formatting - aligning the number to right */
 		if(adcval < 10) { 
 			lcd_write_str("   ");
 		}
