@@ -207,7 +207,7 @@ uint8_t adc_busy(void)
   return(ADCON0bits.GO);
 }
 
-void adc_setchconv(unsigned char channel)
+void adc_setchconv(uint8_t channel)
 {
   ADCON0 = (ADCON0 & 0b10000011)|
            ((channel) & 0b01111100);
