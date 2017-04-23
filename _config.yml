@@ -1,3 +1,5 @@
 theme: jekyll-theme-midnight
+title: SDCC C Library
+description: A C library for PIC18F46K22 using SDCC C compiler
 gems:
   - jemoji
