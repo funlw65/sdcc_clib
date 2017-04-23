@@ -1,7 +1,8 @@
 [Go back to the main site](https://funlw65.github.io/)
 <hr />
 
-# :boom: SDCC C library
+## :boom: Welcome!
+
 SDCC libraries for PIC18F46K22 internal peripherals and external devices. 
 
 Here, the PIC18F46K22 is used as a Sanguino alternative, but without wiring language. 
